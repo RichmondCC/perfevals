@@ -1,0 +1,739 @@
+<nav class="navbar navbar-default navbar-fixed-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+      <a class="navbar-brand" href="#/admin">
+      <img src="images/RCC_logo_torch_color.png" alt="RCC Logo" width="50" height="60" style="float: left;" />
+      <span style="clear: both; margin-left: .5em; font-size: 1.75em; font-weight: bold; color: black;">Performance Evaluations<span style="color: rgb(217, 83, 79);"> - View</span></span>
+    </a>
+
+    </div>
+
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+          <li class="btn btn-primary" style="margin-top: .5em; margin-right: 1em;" data-ng-click="admin_panel()" data-ng-show="isAdmin || isPrez">
+              Back <span class="glyphicon glyphicon-circle-arrow-left"></span>
+          </li>
+      </ul>
+      <form class="navbar-form navbar-right" role="login" data-ng-hide="loggedIn" data-ng-submit="login(login_username, login_password)">
+        <div class="form-group">
+          <input class="form-control" data-ng-model="login_username" placeholder="Username" type="text">
+        </div>
+        <div class="form-group">
+          <input class="form-control" data-ng-model="login_password" placeholder="Password" type="password">
+        </div>
+        <button type="submit" class="btn btn-primary">Log in</button>
+      </form>
+      <form class="navbar-form navbar-right" role="login" data-ng-show="loggedIn" data-ng-submit="logout()">
+        <span>Welcome, {{name}}.</span>
+        <button type="submit" class="btn btn-primary">Log out</button>
+      </form>
+    </div>
+  </div>
+</nav>
+<div class="col-md-10 col-md-offset-1">
+
+  <form name="mainForm"  style="padding-bottom: 175px">
+      <div class="panel panel-default">
+        <div class="panel-heading">Employee</div>
+        <div class="panel-body">
+          <div class="form-group col-md-6">
+            <label for="name" class="control-label">Name</label>
+            <input class="form-control" type="text" name="name" value="{{viewEval[0].name}}" placeholder="Name" disabled />
+          </div>
+          <div class="form-group col-md-6">
+            <label for="title" class="control-label">Title</label>
+            <input class="form-control" type="text" name="title" value="{{viewEval[0].title}}" placeholder="Title" disabled />
+          </div>
+          <div class="form-group col-md-6">
+            <label for="division" class="control-label">Division</label>
+            <input class="form-control" type="text" name="division" value="{{viewEval[0].division}}" placeholder="Division" disabled />
+          </div>
+          <div class="form-group col-md-6">
+            <label for="department" class="control-label">Department</label>
+            <input class="form-control" type="text" name="department" value="{{viewEval[0].department}}" placeholder="Department" disabled />
+          </div>
+        </div>
+      </div>
+
+      <div class="panel panel-default">
+        <div class="panel-heading">Job Description</div>
+        <div class="panel-body">
+          <div class="form-group col-md-6">
+            <label for="current_desc" class="control-label">Current job description</label>
+            <div class="input-group">
+              <input class="form-control" type="text" name="description_name" value="{{viewEval[0].job_description.admin_desc_link}}" disabled>
+              <span class="input-group-addon">
+            <a href="/evals/uploads/current/{{viewEval[0].job_description.admin_desc_link}}" target="_blank" class="btn btn-xs btn-primary">View</a>
+          </span>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group col-md-12">
+              <div class="col-md-8">
+                <h5>Reviewed and updated job description?</h5>
+              </div>
+              <div class="col-md-1">
+                <h6>No</h6></div>
+              <div class="col-md-2">
+                <label class="switch">
+                  <input type="checkbox" data-ng-checked="viewEval[0].job_description.reviewed_date" disabled>
+                  <span class="slider round"></span>
+                </label>
+                <input class="form-control" type="hidden" data-ng-model="admin_reviewed_date" data-ng-value="viewEval[0].job_description.reviewed_date" disabled></input>
+              </div>
+              <div class="col-md-1">
+                <h6>Yes</h6></div>
+            </div>
+            <div class="form-group col-md-12">
+              <div class="col-md-8">
+                <h5>Sent updated job description to HR?</h5>
+              </div>
+              <div class="col-md-1">
+                <h6>No</h6></div>
+              <div class="col-md-2">
+                <label class="switch">
+                  <input type="checkbox" data-ng-checked="viewEval[0].job_description.updated_date" disabled>
+                  <span class="slider round"></span>
+                </label>
+                <input class="form-control" type="hidden" data-ng-model="admin_updated_date" data-ng-value="viewEval[0].job_description.updated_date" disabled></input>
+              </div>
+              <div class="col-md-1">
+                <h6>Yes</h6></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel panel-default">
+        <div class="panel-heading">Skills
+          <span class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="hover" data-placement="right" data-html="true" title="<h4>Competency Scale</h4>" data-content="<dl>
+                        <dt>Exceeds Expectations</dt>
+                        <dd>Exceeds the performance requirements of the position.</dd>
+                        <dt>Meets Expectations</dt>
+                        <dd>Meets the performance requirements of the position.</dd>
+                        <dt>Unsatisfactory/Needs Improvement</dt>
+                        <dd>Does not meet the performance requirements of the position.</dd>
+                        <dt>N/A</dt>
+                        <dd>Unable to determine a rating due to lack of evidence or support to give an appropriate rating.</dd>
+                      </dl>">
+      </span>
+        </div>
+        <div class="panel-body">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Employee Rating</th>
+                <th>Supervisor Rating</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  Duties
+                  <span class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="hover" data-placement="right" title="Duties" data-content="Review the job description and then consider how well the expectations identified are met by the employee. For all employees, consider Administrative Duties (e.g. Work Knowledge, Work Quality, and Accomplishing Assigned Duties). For faculty, consider the following as well: Quality of Instruction (e.g. Assessing as a Tool for Teaching and Learning, Learning-Centered Teaching Methods, Technology as a Tool for Teaching and Learning).">
+              </span>
+                </td>
+                <td>
+                  <div class="form-group">
+                      <select class="form-control" name="emp_job_duties" disabled>
+                       <option value="{{viewEval[0].core_skills.duties.employee_rating}}">
+                         {{viewEval[0].core_skills.duties.employee_rating}}
+                       </option>
+                       <option value="Exceeds Expectations">Exceeds Expectations</option>
+                       <option value="Meets Expectations">Meets Expectations</option>
+                       <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+                       <option value="N/A">N/A</option>
+                     </select>
+                  </div>
+                </td>
+                <td>
+                  <div class="form-group">
+                      <select class="form-control" name="sup_job_duties" disabled="(sup_isFinal)">
+                       <option value="{{viewEval[0].core_skills.duties.supervisor_rating}}">
+                         {{viewEval[0].core_skills.duties.supervisor_rating}}
+                       </option>
+                       <option value="Exceeds Expectations">Exceeds Expectations</option>
+                       <option value="Meets Expectations">Meets Expectations</option>
+                       <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+                       <option value="N/A">N/A</option>
+                     </select>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  Teamwork
+                  <span class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="hover" data-placement="right" title="Teamwork" data-content="Treats co-workers with respect. Meets commitments to others. Serves on committees or work groups and assumes fair share of tasks. Resolves college-related issues and disputes in a professional manner, utilizing the appropriate college policy & procedure, etc.">
+              </span>
+                </td>
+                <td>
+                  <div class="form-group">
+                      <select class="form-control" name="emp_teamwork" disabled>
+                       <option value="{{viewEval[0].core_skills.teamwork.employee_rating}}">
+                         {{viewEval[0].core_skills.teamwork.employee_rating}}
+                       </option>
+                       <option value="Exceeds Expectations">Exceeds Expectations</option>
+                       <option value="Meets Expectations">Meets Expectations</option>
+                       <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+                       <option value="N/A">N/A</option>
+                     </select>
+                  </div>
+                </td>
+                <td>
+                  <div class="form-group">
+                      <select class="form-control" name="sup_teamwork" disabled>
+                       <option value="{{viewEval[0].core_skills.teamwork.supervisor_rating}}">
+                         {{viewEval[0].core_skills.teamwork.supervisor_rating}}
+                       </option>
+                       <option value="Exceeds Expectations">Exceeds Expectations</option>
+                       <option value="Meets Expectations">Meets Expectations</option>
+                       <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+                       <option value="N/A">N/A</option>
+                     </select>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  Dependability
+                  <span class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="hover" data-placement="right" title="Dependability" data-content="Reports to work as scheduled and seeks approval from supervisor in advance for any changes to the established work schedule. Devotes full effort to job responsibilities during work hours. Reliably fulfills basic job responsibilities.">
+              </span>
+                </td>
+                <td>
+                  <div class="form-group">
+                      <select class="form-control" name="emp_dependability" disabled>
+                       <option value="{{viewEval[0].core_skills.dependability.employee_rating}}">
+                         {{viewEval[0].core_skills.dependability.employee_rating}}
+                       </option>
+                       <option value="Exceeds Expectations">Exceeds Expectations</option>
+                       <option value="Meets Expectations">Meets Expectations</option>
+                       <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+                       <option value="N/A">N/A</option>
+                     </select>
+                  </div>
+                </td>
+                <td>
+                  <div class="form-group">
+                      <select class="form-control" name="sup_dependability" disabled>
+                       <option value="{{viewEval[0].core_skills.dependability.supervisor_rating}}">
+                         {{viewEval[0].core_skills.dependability.supervisor_rating}}
+                       </option>
+                       <option value="Exceeds Expectations">Exceeds Expectations</option>
+                       <option value="Meets Expectations">Meets Expectations</option>
+                       <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+                       <option value="N/A">N/A</option>
+                     </select>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  Judgement
+                  <span class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="hover" data-placement="right" title="Judgement" data-content="Makes work-related decisions and/or takes actions that are in the best interest of the program and college. Uses equipment, time, and resources judiciously and as authorized. Protects and maintains college property and equipment.">
+              </span>
+                </td>
+                <td>
+                  <div class="form-group">
+                      <select class="form-control" name="emp_judgement" disabled>
+                       <option value="{{viewEval[0].core_skills.judgement.employee_rating}}">
+                         {{viewEval[0].core_skills.judgement.employee_rating}}
+                       </option>
+                       <option value="Exceeds Expectations">Exceeds Expectations</option>
+                       <option value="Meets Expectations">Meets Expectations</option>
+                       <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+                       <option value="N/A">N/A</option>
+                     </select>
+                  </div>
+                </td>
+                <td>
+                  <div class="form-group">
+                      <select class="form-control" name="sup_judgement" disabled>
+                       <option value="{{viewEval[0].core_skills.judgement.supervisor_rating}}">
+                         {{viewEval[0].core_skills.judgement.supervisor_rating}}
+                       </option>
+                       <option value="Exceeds Expectations">Exceeds Expectations</option>
+                       <option value="Meets Expectations">Meets Expectations</option>
+                       <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+                       <option value="N/A">N/A</option>
+                     </select>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  Ethics
+                  <span class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="hover" data-placement="right" title="Ethics" data-content="Performs duties and responsibilities with honesty and integrity. Takes steps to prevent breaches of confidentiality and/or security. Reports any inappropriate (fraudulent, illegal, unethical) activities. Will comply with all pertinent laws and regulations, etc.">
+              </span>
+                </td>
+                <td>
+                  <div class="form-group">
+                      <select class="form-control" name="emp_ethics" disabled>
+                       <option value="{{viewEval[0].core_skills.ethics.employee_rating}}">
+                         {{viewEval[0].core_skills.ethics.employee_rating}}
+                       </option>
+                       <option value="Exceeds Expectations">Exceeds Expectations</option>
+                       <option value="Meets Expectations">Meets Expectations</option>
+                       <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+                       <option value="N/A">N/A</option>
+                     </select>
+                  </div>
+                </td>
+                <td>
+                  <div class="form-group">
+                      <select class="form-control" name="sup_ethics" disabled>
+                       <option value="{{viewEval[0].core_skills.ethics.supervisor_rating}}">
+                         {{viewEval[0].core_skills.ethics.supervisor_rating}}
+                       </option>
+                       <option value="Exceeds Expectations">Exceeds Expectations</option>
+                       <option value="Meets Expectations">Meets Expectations</option>
+                       <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+                       <option value="N/A">N/A</option>
+                     </select>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  Adaptability
+                  <span class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="hover" data-placement="right" title="Adaptability" data-content="Adapts to new duties and assignments as needed by the college. Able to acclimate to changes to meetings and work requirements as needed.">
+              </span>
+                </td>
+                <td>
+                  <div class="form-group">
+                      <select class="form-control" name="emp_adaptability" disabled>
+                       <option value="{{viewEval[0].core_skills.adaptability.employee_rating}}">
+                         {{viewEval[0].core_skills.adaptability.employee_rating}}
+                       </option>
+                       <option value="Exceeds Expectations">Exceeds Expectations</option>
+                       <option value="Meets Expectations">Meets Expectations</option>
+                       <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+                       <option value="N/A">N/A</option>
+                     </select>
+                  </div>
+                </td>
+                <td>
+                  <div class="form-group">
+                      <select class="form-control" name="sup_adaptability" disabled>
+                       <option value="{{viewEval[0].core_skills.adaptability.supervisor_rating}}">
+                         {{viewEval[0].core_skills.adaptability.supervisor_rating}}
+                       </option>
+                       <option value="Exceeds Expectations">Exceeds Expectations</option>
+                       <option value="Meets Expectations">Meets Expectations</option>
+                       <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+                       <option value="N/A">N/A</option>
+                     </select>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  Communication
+                  <span class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="hover" data-placement="right" title="Communication" data-content="Expresses thoughts clearly and concisely when speaking or writing. Listens attentively and seeks clarification in situations of ambiguity or uncertainty. Effectively uses essential electronic communication tools of the college.">
+              </span>
+                </td>
+                <td>
+                  <div class="form-group">
+                      <select class="form-control" name="emp_communication" disabled>
+                       <option value="{{viewEval[0].core_skills.communication.employee_rating}}">
+                         {{viewEval[0].core_skills.communication.employee_rating}}
+                       </option>
+                       <option value="Exceeds Expectations">Exceeds Expectations</option>
+                       <option value="Meets Expectations">Meets Expectations</option>
+                       <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+                       <option value="N/A">N/A</option>
+                     </select>
+                  </div>
+                </td>
+                <td>
+                  <div class="form-group">
+                      <select class="form-control" name="sup_communication" disabled>
+                       <option value="{{viewEval[0].core_skills.communication.supervisor_rating}}">
+                         {{viewEval[0].core_skills.communication.supervisor_rating}}
+                       </option>
+                       <option value="Exceeds Expectations">Exceeds Expectations</option>
+                       <option value="Meets Expectations">Meets Expectations</option>
+                       <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+                       <option value="N/A">N/A</option>
+                     </select>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  Inclusiveness
+                  <span class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="hover" data-placement="right" title="Inclusiveness" data-content="Treats others with consideration and respect. Establishes and maintains effective working relationships. Acts immediately to stop intimidating and/or insensitive behavior. Appreciates the value of diversity in the workplace.">
+              </span>
+                </td>
+                <td>
+                  <div class="form-group">
+                      <select class="form-control" name="emp_inclusiveness" disabled>
+                       <option value="{{viewEval[0].core_skills.inclusiveness.employee_rating}}">
+                         {{viewEval[0].core_skills.inclusiveness.employee_rating}}
+                       </option>
+                       <option value="Exceeds Expectations">Exceeds Expectations</option>
+                       <option value="Meets Expectations">Meets Expectations</option>
+                       <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+                       <option value="N/A">N/A</option>
+                     </select>
+                  </div>
+                </td>
+                <td>
+                  <div class="form-group">
+                      <select class="form-control" name="sup_inclusiveness" disabled>
+                       <option value="{{viewEval[0].core_skills.inclusiveness.supervisor_rating}}">
+                         {{viewEval[0].core_skills.inclusiveness.supervisor_rating}}
+                       </option>
+                       <option value="Exceeds Expectations">Exceeds Expectations</option>
+                       <option value="Meets Expectations">Meets Expectations</option>
+                       <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+                       <option value="N/A">N/A</option>
+                     </select>
+                   </span>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  Innovation
+                  <span class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="hover" data-placement="right" title="Innovation" data-content="Seeks information on best practices. Tries new approaches. Gathers information to assess potential problems and takes advantage of opportunities. Improvises effectively when resources are scarce.">
+              </span>
+                </td>
+                <td>
+                  <div class="form-group">
+                      <select class="form-control" name="emp_innovation" disabled>
+                       <option value="{{viewEval[0].core_skills.innovation.employee_rating}}">
+                         {{viewEval[0].core_skills.innovation.employee_rating}}
+                       </option>
+                       <option value="Exceeds Expectations">Exceeds Expectations</option>
+                       <option value="Meets Expectations">Meets Expectations</option>
+                       <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+                       <option value="N/A">N/A</option>
+                     </select>
+                  </div>
+                </td>
+                <td>
+                  <div class="form-group">
+                      <select class="form-control" name="sup_innovation" disabled>
+                       <option value="{{viewEval[0].core_skills.innovation.supervisor_rating}}">
+                         {{viewEval[0].core_skills.innovation.supervisor_rating}}
+                       </option>
+                       <option value="Exceeds Expectations">Exceeds Expectations</option>
+                       <option value="Meets Expectations">Meets Expectations</option>
+                       <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+                       <option value="N/A">N/A</option>
+                     </select>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  Advising
+                  <span class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="hover" data-placement="right" title="Innovation" data-content="Evaluates the appropriateness of students' proposed schedules and course loads. Reviews students' progress toward completion. Determines if students meet pre-requisites and/or eligibility requirements. Advises for proper course sequencing for graduation, etc.">
+              </span>
+                </td>
+                <td>
+                  <div class="form-group">
+                      <select class="form-control" name="emp_advising" disabled>
+                       <option value="{{viewEval[0].core_skills.advising.employee_rating}}">
+                         {{viewEval[0].core_skills.advising.employee_rating}}
+                       </option>
+                       <option value="Exceeds Expectations">Exceeds Expectations</option>
+                       <option value="Meets Expectations">Meets Expectations</option>
+                       <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+                       <option value="N/A">N/A</option>
+                     </select>
+                  </div>
+                </td>
+                <td>
+                  <div class="form-group">
+                      <select class="form-control" name="sup_advising" disabled>
+                       <option value="{{viewEval[0].core_skills.advising.supervisor_rating}}">
+                         {{viewEval[0].core_skills.advising.supervisor_rating}}
+                       </option>
+                       <option value="Exceeds Expectations">Exceeds Expectations</option>
+                       <option value="Meets Expectations">Meets Expectations</option>
+                       <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+                       <option value="N/A">N/A</option>
+                     </select>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel panel-default" data-ng-show="viewEval[0].acknowledgements.pip_needed === true">
+        <div class="panel-heading">Performance Improvement Plan
+        </div>
+        <div class="panel-body">
+
+          <div class="form-group col-md-6">
+            <label for="pip_steps" class="control-label">Steps</label>
+            <textarea class="form-control" rows="3" name="pip_steps">{{viewEval[0].performance_improvement_plan.steps}}</textarea>
+          </div>
+          <!-- <div class="form-group col-md-6">
+            <label for="pip_results" class="control-label">Results</label>
+            <textarea class="form-control" rows="3" name="pip_results">{{viewEval[0].performance_improvement_plan.results}}</textarea>
+          </div> -->
+
+
+        </div>
+      </div>
+
+      <div class="panel panel-default">
+        <div class="panel-heading">Objectives
+        </div>
+        <div class="panel-body">
+
+          <div class="form-group col-md-6">
+            <label for="objective" class="control-label">Objective</label>
+            <textarea class="form-control" rows="3" name="objective"  disabled>{{viewEval[0].objectives[objective_page].objective}}</textarea>
+          </div>
+          <div class="form-group col-md-6">
+            <label for="goals" class="control-label">Related Goals</label>
+            <textarea class="form-control" rows="3" name="goals" disabled>{{viewEval[0].objectives[objective_page].goals}}</textarea>
+          </div>
+
+          <div class="form-group col-md-6">
+            <label for="progress" class="control-label">Mid-Year Progress</label>
+            <textarea class="form-control" rows="3" name="progress" disabled>{{viewEval[0].objectives[objective_page].progress}}</textarea>
+          </div>
+
+          <div class="form-group col-md-6">
+            <label for="results" class="control-label">End-Of-Year Results</label>
+            <textarea class="form-control" rows="3" name="results" disabled>{{viewEval[0].objectives[objective_page].results}}</textarea>
+          </div>
+
+          <div class="col-md-12 text-center">
+            <ul class="pagination pagination-lg">
+              <li data-ng-class="{'active': (objective_page === $index)}" data-ng-repeat="objective in viewEval[0].objectives">
+                <a data-ng-click="obj_page($index)">
+                {{$index + 1}}
+              </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="panel panel-default">
+        <div class="panel-heading">Development
+        </div>
+        <div class="panel-body">
+          <div class="col-md-12">
+            <div class="form-group col-md-6">
+              <label for="reviewed" class="control-label">Required License/Certification/Credential</label>
+              <div class="input-group">
+                <span class="input-group-addon">
+              <select name="certificate_license">
+                <option value="{{viewEval[0].professional_development.certificate_license}}">{{viewEval[0].professional_development.certificate_license}}</option>
+                <option value="N/A">N/A</option>
+                <option value="Doesn't Have">Doesn't Have</option>
+                <option value="Up to Date">Up to Date</option>
+              </select>
+            </span>
+                <input class="datepicker form-control" type="text" name="cert_lic_date" placeholder="Expires" value="{{viewEval[0].job_description.cert_lic_date | date: 'shortDate'}}">
+                <span class="input-group-addon">
+              <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+              </div>
+            </div>
+
+            <div class="form-group col-md-6">
+              <label for="reviewed" class="control-label">Supplemental License/Certification/Credential</label>
+              <div class="input-group">
+                <input class="datepicker form-control" type="text" name="additional_date" placeholder="Expires" value="{{viewEval[0].job_description.additional_date | date: 'shortDate'}}">
+                <span class="input-group-addon">
+              <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-12" style="border-bottom: 1px solid silver; padding: 1em;">
+          </div>
+          <div class="col-md-12" style="padding: 1em;">
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-group col-md-12">
+              <label for="prof_dev_activity" class="control-label">Professional Development Activities</label>
+              <input class="form-control" type="text" name="prof_dev_activity" value="{{viewEval[0].prof_dev_activities[training_page].activity}}" placeholder="Activity" disabled />
+            </div>
+
+            <div class="form-group col-md-12">
+              <label for="prof_dev_time" class="control-label">Hours</label>
+              <input class="form-control" type="text" name="prof_dev_time" value="{{viewEval[0].prof_dev_activities[training_page].hours}}" placeholder="Time" disabled />
+            </div>
+          </div>
+          <div class="form-group col-md-6">
+            <label for="prof_dev_comments" class="control-label">Comments</label>
+            <textarea class="form-control" rows="4" name="prof_dev_comments" placeholder="Comments" disabled>{{viewEval[0].prof_dev_activities[training_page].comments}}</textarea>
+          </div>
+
+          <div class="col-md-12 text-center">
+            <ul class="pagination pagination-lg">
+              <li data-ng-class="{'active': (training_page === $index)}" data-ng-repeat="training in viewEval[0].prof_dev_activities">
+                <a data-ng-click="train_page($index)">
+                {{$index + 1}}
+              </a>
+              </li>
+            </ul>
+          </div>
+
+
+        </div>
+      </div>
+
+      <div class="panel panel-default">
+        <div class="panel-heading">Acknowledgement
+        </div>
+        <div class="panel-body">
+          <p>It is important to note that acknowledgement will lock your ratings in place and you will no longer be able to make changes to this evaluation. Acknowledgement or verification do not denote agreement with the contents of this evaluation.</p>
+          <div class="form-group col-md-6">
+            <label for="name" class="control-label">Employee Comments</label>
+            <textarea class="form-control" rows="3" name="emp_comment" placeholder="Employee Comments" disabled>
+              {{viewEval[0].acknowledgements.emp_comment}}
+            </textarea>
+          </div>
+          <div class="form-group col-md-6">
+            <div class="col-md-8">
+              <h5>Employee acknowledges evaluation is complete?</h5>
+            </div>
+            <div class="col-md-1">
+              <h6>No</h6>
+            </div>
+            <div class="col-md-2">
+              <label class="switch">
+                <input type="checkbox" data-ng-checked="viewEval[0].acknowledgements.emp_date" disabled>
+                <span class="slider round"></span>
+              </label>
+            </div>
+            <div class="col-md-1">
+              <h6>Yes</h6>
+            </div>
+            <input class="form-control" type="hidden" data-ng-model="admin_emp_date" data-ng-value="viewEval[0].acknowledgements.emp_date" disabled>
+          </div>
+
+          <div class="col-md-12" style="border-bottom: 1px solid silver; padding: 1em;">
+          </div>
+          <div class="col-md-12" style="padding: 1em;">
+          </div>
+
+          <div class="form-group col-md-6">
+            <label for="name" class="control-label">Supervisor Comments</label>
+            <textarea class="form-control" rows="3" name="sup_comment" placeholder="Supervisor Comments" disabled>
+              {{viewEval[0].acknowledgements.sup_comment}}
+            </textarea>
+          </div>
+          <div class="form-group col-md-6">
+            <div class="col-md-8">
+              <h5>Supervisor acknowledges evaluation is complete?</h5>
+            </div>
+            <div class="col-md-1">
+              <h6>No</h6></div>
+            <div class="col-md-2">
+              <label class="switch">
+                <input type="checkbox" data-ng-checked="viewEval[0].acknowledgements.sup_date"  disabled>
+                <span class="slider round"></span>
+              </label>
+            </div>
+            <div class="col-md-1">
+              <h6>Yes</h6>
+            </div>
+            <input class="form-control" type="hidden" data-ng-model="admin_sup_date" data-ng-value="viewEval[0].acknowledgements.sup_date'" disabled>
+          </div>
+          <div class="col-md-12" style="border-bottom: 1px solid silver; padding: 1em;">
+          </div>
+          <div class="col-md-12" style="padding: 1em;">
+          </div>
+
+          <div class="col-md-6">
+            <input class="form-control" name="verify_date" type="text" hidden="hidden" data-ng-model="verify_date" data-ng-hide="true" data-ng-value="eval.acknowledgements.final_meeting | date: 'shortDate'">
+            <h4>Verification(Employee)</h4>
+            <p>Sign in below to verify meeting with your supervisor about the above performance evaluation.</p>
+            <form>
+              <div class="form-group col-md-12">
+                <label for="emp_meeting_comments" class="control-label">Employee Meeting Comments</label>
+                <textarea class="form-control" rows="3" name="emp_meeting_comments" placeholder="Employee meeting comments" disabled>{{viewEval[0].acknowledgements.emp_meeting_comments}}</textarea>
+              </div>
+              <h2 class="text-success" data-ng-show="viewEval[0].acknowledgements.verify_date">Verified!</h2>
+            </form>
+          </div>
+
+          <div class="col-md-6">
+            <h4>Verification(Supervisor)</h4>
+            <p>Sign in below to verify meeting with your employee about the above performance evaluation.</p>
+            <form>
+              <div class="form-group col-md-12">
+                <label for="sup_meeting_comments" class="control-label">Supervisor Meeting Comments</label>
+                <textarea class="form-control" rows="3" name="sup_meeting_comments" placeholder="Employee meeting comments" disabled>{{viewEval[0].acknowledgements.sup_meeting_comments}}</textarea>
+              </div>
+              <h2 class="text-success" data-ng-show="viewEval[0].acknowledgements.verify_date">Verified!</h2>
+            </form>
+          </div>
+
+          <div class="col-md-12" style="border-bottom: 1px solid silver; padding: 1em;">
+          </div>
+          <div class="col-md-12" style="padding: 1em;">
+          </div>
+
+          <div class="form-group col-md-6">
+            <label for="name" class="control-label">Next-Level Comments</label>
+            <textarea class="form-control" rows="3" name="nl_comment" placeholder="Next-Level Comments" disabled>{{viewEval[0].acknowledgements.nl_comment}}</textarea>
+          </div>
+          <div class="form-group col-md-6">
+            <div class="col-md-8">
+              <h5>Next-Level acknowledges evaluation is complete?</h5>
+            </div>
+            <div class="col-md-1">
+              <h6>No</h6></div>
+            <div class="col-md-2">
+              <label class="switch">
+                <input type="checkbox" data-ng-checked="viewEval[0].acknowledgements.nl_date" disabled>
+                <span class="slider round"></span>
+              </label>
+            </div>
+            <div class="col-md-1">
+              <h6>Yes</h6>
+            </div>
+            <input class="form-control" type="hidden" data-ng-model="admin_nl_date" value="viewEval[0].acknowledgements.nl_date" disabled>
+          </div>
+
+      </div>
+    </div>
+</div>
+</form>
+
+<footer class="footer navbar navbar-fixed-bottom">
+  <div class="col-md-12" style="background-color: white; border-top: 1px solid silver; margin-top: 1em;">
+    <div class="col-md-2">
+      <img src="images/RCC_logo_devops.png" alt="RCC Developer Operations" width="125" height="102" />
+    </div>
+    <div class="col-md-2">
+      <h4>Phone</h4>
+      <p>(910) 410-1822</p>
+    </div>
+    <div class="col-md-2">
+      <h4>Email</h4>
+      <p>ragaddy@richmondcc.edu</p>
+    </div>
+    <div class="col-md-2">
+      <h4>Chat</h4>
+      <p>(Currently Offline)</p>
+    </div>
+    <div class="col-md-2">
+      <h4>Report Bug</h4>
+      <p>(Currently Offline)</p>
+    </div>
+  </div>
+</footer>

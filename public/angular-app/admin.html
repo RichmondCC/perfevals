@@ -1,0 +1,592 @@
+<nav class="navbar navbar-default navbar-fixed-top" data-ng-class="completionFilter ? 'hidden' : ''">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+      <a class="navbar-brand" href="#/admin">
+      <img src="images/RCC_logo_torch_color.png" alt="RCC Logo" width="50" height="60" style="float: left;" />
+      <span style="clear: both; margin-left: .5em; font-size: 1.75em; font-weight: bold; color: black;">Performance Evaluations<span style="color: rgb(217, 83, 79);"> - Admin</span></span>
+
+    </a>
+
+    </div>
+    <ul class="nav navbar-nav">
+      <li class="btn btn-primary" style="margin-top: .5em; margin-right: 1em;" data-ng-click="main_panel()">
+        Back <span class="glyphicon glyphicon-circle-arrow-left"></span>
+      </li>
+      <li class="btn btn-primary" style="margin-top: .5em; margin-right: 1em;" data-toggle="modal" data-target="#generateEval" data-ng-show="evalCount <= 0 && isAdmin" data-ng-click="admin_generate()">Generate</li>
+      <li class="btn btn-primary" style="margin-top: .5em; margin-right: 1em;" data-ng-hide="evalCount <= 0 || !isAdmin" disabled>Generate</li>
+      <span class="glyphicon glyphicon-question-sign" data-ng-show="isAdmin" data-toggle="popover" data-trigger="hover" data-placement="right" title="Automated Eval Creation" data-content="This option is only available when there are no evals in the database for the current year.">
+        </span>
+    </ul>
+
+    <form class="navbar-form navbar-right" role="login" data-ng-hide="loggedIn" data-ng-submit="login(login_username, login_password)">
+      <div class="form-group">
+        <input class="form-control" data-ng-model="login_username" placeholder="Username" type="text">
+      </div>
+      <div class="form-group">
+        <input class="form-control" data-ng-model="login_password" placeholder="Password" type="password">
+      </div>
+      <button type="submit" class="btn btn-primary">Log in</button>
+    </form>
+    <form class="navbar-form navbar-right" role="login" data-ng-show="loggedIn" data-ng-submit="logout()">
+      <span>Welcome, {{name}}.</span>
+      <button type="submit" class="btn btn-primary">Log out</button>
+    </form>
+  </div>
+</nav>
+<div id="generateEval" class="modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Generating Evaluations...</h4>
+      </div>
+      <div class="modal-body">
+        <div class="col-md-6 col-md-offset-3">
+          <image src="images\loading.gif" />
+        </div>
+      </div>
+      <div class="modal-footer">
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="col-md-10 col-md-offset-1" style="padding-bottom: 175px">
+  <form name="adminForm">
+    <div class="panel panel-default" data-ng-if="isAdmin && !completionFilter">
+      <div class="panel-heading">Add new evaluation</div>
+      <div class="panel-body">
+        <table class="table table-striped">
+          <tbody>
+            <tr>
+              <td>
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label for="admin_add_name" class="control-label">Name</label>
+                    <input class="form-control" name="admin_add_name" placeholder="Name" type="text">
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-group">
+                    <label for="admin_add_title" class="control-label">Title</label>
+                    <div>
+                      <input class="form-control" name="admin_add_title" placeholder="Title" type="text">
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-group">
+                    <label for="admin_add_div" class="control-label">Division</label>
+                    <div>
+                      <input class="form-control" name="admin_add_div" placeholder="Division" type="text">
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-group">
+                    <label for="admin_add_dept" class="control-label">Department</label>
+                    <div>
+                      <input class="form-control" name="admin_add_dept" placeholder="Department" type="text">
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-group">
+                    <label for="admin_add_desc_link" class="control-label">Job description</label>
+                    <div>
+                      <input class="form-control" name="admin_add_desc_link" placeholder="Job Description" type="text">
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-group">
+                    <label for="admin_add_username" class="control-label">Username</label>
+                    <div>
+                      <input class="form-control" name="admin_add_username" placeholder="Userame" type="text">
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-group">
+                    <label for="admin_add_super" class="control-label">Supervisor Username</label>
+                    <div>
+                      <input class="form-control" name="admin_add_super" placeholder="Supervisor" type="text">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="admin_add_super" class="control-label">Supervisor Name</label>
+                    <div>
+                      <input class="form-control" name="admin_add_super_name" placeholder="Supervisor Name" type="text">
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-group">
+                    <label for="admin_add_nl" class="control-label">Next-Level Username</label>
+                    <div>
+                      <input class="form-control" name="admin_add_nl" placeholder="Next Level Supervisor" type="text">
+                    </div>
+                  </div>
+                <div class="form-group">
+                  <label for="admin_add_nl" class="control-label">Next-Level Name</label>
+                  <div>
+                    <input class="form-control" name="admin_add_nl_name" placeholder="Next Level Name" type="text">
+                  </div>
+                </div>
+              </div>
+              </div>
+                <div class="col-md-1">
+                  <div class="form-group">
+                    <button type="button" class="btn btn-success" data-ng-click="admin_add()">Add to</button>
+                  </div>
+                </div>
+                <div class="col-md-2">
+                  <select class="form-control" id="add_years" data-ng-model="add_years" data-ng-options="year for year in yearOpts" data-ng-init="add_years = add_years || yearOpts[0]">
+                    </select>
+                </div>
+              </td>
+            </tr>
+        </table>
+      </div>
+    </div>
+    <form name="adminForm">
+      <div class="panel panel-default" data-ng-if="isAdmin && !completionFilter">
+        <div class="panel-heading">Replace</div>
+        <div class="panel-body">
+          <div class="row" style="margin-bottom: 1em;">
+            <div class="col-md-4">
+              <div class="btn-group btn-group-justified">
+                <a class="btn btn-default" data-ng-class="replaceSuper" data-ng-click="replace_type('supervisor')">Supervisor</a>
+                <a class="btn btn-default" data-ng-class="replaceNL" data-ng-click="replace_type('next_level')">Next Level</a>
+              </div>
+            </div>
+          </div>
+          <div class="row" data-ng-show="replaceType === 'supervisor'">
+            <div class="col-md-5">
+              <div class="form-group">
+                <label for="current_supervisor" class="control-label">Current Supervisor:</label>
+                <div>
+                  <input class="form-control" name="current_supervisor" placeholder="Current Supervisor" type="text">
+                </div>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-group">
+                <label for="With" class="control-label">with</label>
+              </div>
+            </div>
+            <div class="col-md-5">
+              <div class="form-group">
+                <label for="new_supervisor" class="control-label">New Supervisor Username:</label>
+                <input class="form-control" name="new_supervisor" placeholder="New Supervisor" type="text">
+              </div>
+              <div class="input-group">
+                <label for="new_supervisor" class="control-label">New Supervisor Name:</label>
+                <input class="form-control" name="new_supervisor_name" placeholder="New Supervisor Name" type="text">
+                <span class="input-group-btn">
+                  <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#adminReplaceSuper" style="margin-left: 1em; margin-top: 1em;">Replace</button>
+                </span>
+              </div>
+            </div>
+            <div id="adminReplaceSuper" class="modal">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Replace Supervisor?</h4>
+                  </div>
+                  <div class="modal-body">
+                    <h6></h6>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" data-ng-click="admin_replace('supervisor')" data-dismiss="modal">Replace</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <div class="row" data-ng-show="replaceType === 'next_level'">
+            <div class="col-md-5">
+              <div class="form-group">
+                <label for="current_nl" class="control-label">Current Next Level:</label>
+                <div>
+                  <input class="form-control" name="current_nl" placeholder="Current Next Level" type="text">
+                </div>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-group">
+                <label for="With" class="control-label">with</label>
+              </div>
+            </div>
+            <div class="col-md-5">
+              <div class="form-group">
+                <label for="new_nl" class="control-label">New Next Level Username:</label>
+                <input class="form-control" name="new_nl" placeholder="New Next Level" type="text">
+              </div>
+              <div class="input-group">
+                <label for="new_nl" class="control-label">New Next Level Name:</label>
+                <input class="form-control" name="new_nl_name" placeholder="New Next Level Name" type="text">
+                <span class="input-group-btn">
+                  <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#adminReplaceNL" style="margin-left: 1em; margin-top: 1em;">Replace</button>
+                </span>
+              </div>
+            </div>
+            <div id="adminReplaceNL" class="modal">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Replace Next Level?</h4>
+                  </div>
+                  <div class="modal-body">
+                    <h6></h6>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" data-ng-click="admin_replace('next_level')" data-dismiss="modal">Replace</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading">View or modify existing evaluations</div>
+        <div class="panel-body">
+          <table class="table table-striped">
+            <tbody>
+
+              <tr>
+                <td>
+                  <div class="col-md-12">
+                    <h5>Filter:</h5>
+                  </div>
+                  <div data-ng-class="completionFilter ? 'hidden' : 'col-md-4'">
+                    <label for="year_filter" class="control-label">By year</label>
+                    <select class="form-control" data-ng-model="year_filter" data-ng-options="year for year in yearOpts" data-ng-init="year_filter = year_filter || yearOpts[0]">
+                        </select>
+                  </div>
+                  <div data-ng-class="completionFilter ? 'hidden' : 'col-md-4'">
+                    <label for="name_filter" class="control-label">By name</label>
+                    <input class="form-control" data-ng-model="name_filter" placeholder="Filter by name..." type="text">
+                  </div>
+                  <div data-ng-class="completionFilter ? 'col-md-12' : 'col-md-4'">
+                    <label class="control-label">By completion</label>
+                    <div class="btn-group btn-group-justified">
+                      <a class="btn" data-ng-class="filterIncomplete" data-ng-click="filter_incomplete()">Incomplete</a>
+                      <a class="btn" data-ng-class="filterAll" data-ng-click="filter_all()">All</a>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <tr data-ng-repeat="eval in adminEvals | filter: {name: name_filter, years: year_filter}">
+                <td>
+                  <!-- All Evals -->
+                  <div class="col-md-12" data-ng-if="!completionFilter">
+                    <div class="row">
+                      <div class="col-md-3">
+                        <div class="col-md-12">
+                          <div class="form-group" data-ng-if="!adminEdit[$index]">
+                            <label for="admin_name_{{$index}}" class="control-label">Name</label>
+                            <input class="form-control" name="admin_name_{{$index}}" placeholder="Name" type="text" disabled="disabled" value="{{eval.name}}">
+                          </div>
+                          <div class="form-group" data-ng-if="adminEdit[$index]">
+                            <label for="admin_name" class="control-label">Name</label>
+                            <input class="form-control" name="admin_name" placeholder="Name" type="text" value="{{eval.name}}">
+                          </div>
+                        </div>
+                        <div class="col-md-12">
+                          <div class="form-group" data-ng-if="!adminEdit[$index]">
+                            <label for="admin_title_{{$index}}" class="control-label">Title</label>
+                            <input class="form-control" name="admin_title_{{$index}}" placeholder="Name" type="text" disabled="disabled" value="{{eval.title}}">
+                          </div>
+                          <div class="form-group" data-ng-if="adminEdit[$index]">
+                            <label for="admin_title" class="control-label">Title</label>
+                            <input class="form-control" name="admin_title" placeholder="Name" type="text" value="{{eval.title}}">
+                          </div>
+                        </div>
+                        <div class="col-md-12">
+                          <div class="form-group">
+                            <div class="form-group" data-ng-if="!adminEdit[$index]">
+                              <label for="admin_username_{{$index}}" class="control-label">Username</label>
+                              <input class="form-control" name="admin_username_{{$index}}" placeholder="Name" type="text" disabled="disabled" value="{{eval.username}}">
+                            </div>
+                            <div class="form-group" data-ng-if="adminEdit[$index]">
+                              <label for="admin_username" class="control-label">Username</label>
+                              <input class="form-control" name="admin_username" placeholder="Name" type="text" value="{{eval.username}}">
+                            </div>
+                          </div>
+                        </div>
+
+                      </div>
+                      <div class="col-md-3">
+                        <div class="col-md-12">
+                          <label for="admin_progress" class="control-label">Progress</label>
+                          <div class="btn-group btn-group-justified">
+                            <a href="#" class="btn btn-sm active disabled" data-ng-class="eval.acknowledgements.emp_date ? 'btn-success' : 'btn-danger'">Emp</a>
+                            <a href="#" class="btn btn-sm active disabled" data-ng-class="eval.acknowledgements.sup_date ? 'btn-success' : 'btn-danger'">Sup</a>
+                            <a href="#" class="btn btn-sm active disabled" data-ng-class="eval.acknowledgements.verify_date ? 'btn-success' : 'btn-danger'">Met</a>
+                            <a href="#" class="btn btn-sm active disabled" data-ng-class="eval.acknowledgements.nl_date ? 'btn-success' : 'btn-danger'">NL</a>
+                          </div>
+                        </div>
+                        <div class="col-md-12">
+                          <div class="form-group" data-ng-if="!adminEdit[$index]">
+                            <label for="admin_div_{{$index}}" class="control-label">Division</label>
+                            <input class="form-control" name="admin_div_{{$index}}" placeholder="Name" type="text" disabled="disabled" value="{{eval.division}}">
+                          </div>
+                          <div class="form-group" data-ng-if="adminEdit[$index]">
+                            <label for="admin_div" class="control-label">Division</label>
+                            <input class="form-control" name="admin_div" placeholder="Name" type="text" value="{{eval.division}}">
+                          </div>
+                        </div>
+                        <div class="col-md-12">
+                          <div class="form-group" data-ng-if="!adminEdit[$index]">
+                            <label for="admin_super_{{$index}}" class="control-label">Supervisor Username</label>
+                            <input class="form-control" name="admin_super_{{$index}}" placeholder="Name" type="text" disabled="disabled" value="{{eval.supervisor}}">
+                          </div>
+                          <div class="form-group" data-ng-if="adminEdit[$index]">
+                            <label for="admin_super" class="control-label">Supervisor Username</label>
+                            <input class="form-control" name="admin_super" placeholder="Name" type="text" value="{{eval.supervisor}}">
+                          </div>
+                        </div>
+                        <div class="col-md-12">
+                          <div class="form-group" data-ng-if="!adminEdit[$index]">
+                            <label for="admin_super_{{$index}}" class="control-label">Supervisor Name</label>
+                            <input class="form-control" name="admin_super_name_{{$index}}" placeholder="Name" type="text" disabled="disabled" value="{{eval.supervisor_name}}">
+                          </div>
+                          <div class="form-group" data-ng-if="adminEdit[$index]">
+                            <label for="admin_super" class="control-label">Supervisor Name</label>
+                            <input class="form-control" name="admin_super_name" placeholder="Name" type="text" value="{{eval.supervisor_name}}">
+                          </div>
+                        </div>
+                        <div class="col-md-12">
+                          <label for="admin_evaluator" class="control-label">Evaluating Supervisor</label>
+                          <input class="form-control" name="admin_evaluator" placeholder="Evaluator" type="text" disabled value="{{eval.acknowledgements.eval_super}}">
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="col-md-12">
+                          <div class="form-group" data-ng-if="!adminEdit[$index]">
+                            <label for="admin_desc_link_{{$index}}" class="control-label">Job Description</label>
+                            <input class="form-control" name="admin_desc_link_{{$index}}" placeholder="Name" type="text" disabled="disabled" value="{{eval.job_description.admin_desc_link}}">
+                          </div>
+                          <div class="form-group" data-ng-if="adminEdit[$index]">
+                            <label for="admin_desc_link_{{$index}}" class="control-label">Job Description</label>
+                            <input class="form-control" name="admin_desc_link" placeholder="Name" type="text" value="{{eval.job_description.admin_desc_link}}">
+                          </div>
+                        </div>
+                        <div class="col-md-12">
+                          <div class="form-group">
+                            <div class="form-group" data-ng-if="!adminEdit[$index]">
+                              <label for="admin_dept_{{$index}}" class="control-label">Department</label>
+                              <input class="form-control" name="admin_dept_{{$index}}" placeholder="Name" type="text" disabled="disabled" value="{{eval.department}}">
+                            </div>
+                            <div class="form-group" data-ng-if="adminEdit[$index]">
+                              <label for="admin_dept" class="control-label">Department</label>
+                              <input class="form-control" name="admin_dept" placeholder="Name" type="text" value="{{eval.department}}">
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-12">
+                          <div class="form-group" data-ng-if="!adminEdit[$index]">
+                            <label for="admin_nl_{{$index}}" class="control-label">Next Level Username</label>
+                            <input class="form-control" name="admin_nl_{{$index}}" placeholder="Name" type="text" disabled="disabled" value="{{eval.next_level}}">
+                          </div>
+                          <div class="form-group" data-ng-if="adminEdit[$index]">
+                            <label for="admin_nl" class="control-label">Next Level Username</label>
+                            <input class="form-control" name="admin_nl" placeholder="Name" type="text" value="{{eval.next_level}}">
+                          </div>
+                        </div>
+                        <div class="col-md-12">
+                          <div class="form-group" data-ng-if="!adminEdit[$index]">
+                            <label for="admin_nl_name_{{$index}}" class="control-label">Next Level Name</label>
+                            <input class="form-control" name="admin_nl_name_{{$index}}" placeholder="Name" type="text" disabled="disabled" value="{{eval.next_level_name}}">
+                          </div>
+                          <div class="form-group" data-ng-if="adminEdit[$index]">
+                            <label for="admin_nl_name" class="control-label">Next Level Name</label>
+                            <input class="form-control" name="admin_nl_name" placeholder="Name" type="text" value="{{eval.next_level_name}}">
+                          </div>
+                        </div>
+                        <div class="col-md-12">
+                          <label for="admin_evaluating_nl" class="control-label">Evaluating Next Level</label>
+                          <input class="form-control" name="admin_evaluating_nl" placeholder="Evaluating Next Level" type="text" disabled value="{{eval.acknowledgements.eval_nl}}">
+                        </div>
+
+
+                      </div>
+                      <div class="col-md-3">
+                        <div class="col-md-12 well">
+                          <div class="form-group">
+                            <label class="control-label">Actions for this eval:</label>
+                            </br />
+                            <div class="col-md-12">
+                              <a href="/evals/#/view/{{eval._id}}" class="btn btn-info" data-ng-show="!adminEdit[$index]">Detail</a><br />
+                            </div>
+                            <div class="col-md-12" data-ng-show="!adminEdit[$index] && isAdmin">
+                              <button class="btn btn-warning" data-ng-click="admin_edit($index)">Edit</button>
+                            </div>
+                            <div class="col-md-12" data-ng-hide="!adminEdit[$index] || !isAdmin">
+                              <button class="btn btn-success" data-ng-click="admin_cancel()">Cancel</button><br />
+                            </div>
+                            <div class="col-md-12" data-ng-hide="!adminEdit[$index] || !isAdmin">
+                              <button class="btn btn-warning" data-ng-click="admin_update(eval._id)">Update</button>
+                            </div>
+                            <div class="col-md-12" data-ng-show="!adminEdit[$index] && isAdmin">
+                              <button class="btn btn-danger" data-toggle="modal" data-target="#deleteEval{{$index}}">Delete</button>
+                            </div>
+                            <div id="deleteEval{{$index}}" class="modal">
+                              <div class="modal-dialog">
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                    <h4 class="modal-title">Delete Eval?</h4>
+                                  </div>
+                                  <div class="modal-body">
+                                    <h6>{{eval.name}} - {{eval.years}}</h6>
+                                  </div>
+                                  <div class="modal-footer">
+                                    <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel</button>
+                                    <button type="button" class="btn btn-danger" data-ng-click="admin_delete(eval._id)" data-dismiss="modal">Delete</button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-12" data-ng-show="!adminEdit[$index] && isAdmin">
+                              <button class="btn btn-success" data-toggle="modal" data-target="#unlockEval{{$index}}">Unlock</button>
+                            </div>
+                            <div id="unlockEval{{$index}}" class="modal">
+                              <div class="modal-dialog">
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                    <h4 class="modal-title">Unlock Eval</h4>
+                                  </div>
+                                  <div class="modal-body">
+                                    <h6>{{eval.name}} - {{eval.years}}</h6>
+                                    <div class="row" style="padding: .5em; background-color: whitesmoke;">
+                                      <div class="col-md-6">
+                                        <button type="button" class="btn btn-danger" data-ng-click="admin_unlock(eval._id, 'emp')" data-dismiss="modal">Unlock Employee (All)</button>
+                                      </div>
+                                      <div class="col-md-6">
+                                        Unlocks employee, supervisor and next-level finalization as well as meeting verification.
+
+                                      </div>
+                                    </div>
+                                    <div class="row" style="padding: .5em">
+                                      <div class="col-md-6">
+                                        <button type="button" class="btn btn-danger" data-ng-click="admin_unlock(eval._id, 'sup')" data-dismiss="modal">Unlock Supervisor</button>
+                                      </div>
+                                      <div class="col-md-6">
+                                        Unlocks supervisor and next-level finalization as well as meeting verification.
+
+                                      </div>
+                                    </div>
+                                    <div class="row" style="padding: .5em; background-color: whitesmoke;">
+                                      <div class="col-md-6">
+                                        <button type="button" class="btn btn-danger" data-ng-click="admin_unlock(eval._id, 'meet')" data-dismiss="modal">Unlock Meeting</button>
+                                      </div>
+                                      <div class="col-md-6">
+                                        Unlocks next-level finalization as well as meeting verification.
+
+                                      </div>
+                                    </div>
+                                    <div class="row" style="padding: .5em">
+                                      <div class="col-md-6">
+                                        <button type="button" class="btn btn-danger" data-ng-click="admin_unlock(eval._id, 'nl')" data-dismiss="modal">Unlock Next Level</button>
+                                      </div>
+                                      <div class="col-md-6">
+                                        Unlocks next-level finalization.
+
+                                      </div>
+                                    </div>
+                                  </div>
+                                <div class="modal-footer">
+                                  <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel</button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+        </div>
+        <!-- incomplete Evals -->
+        <div class="col-xs-12" data-ng-if="completionFilter">
+          <div class="row"  data-ng-show="eval.acknowledgements.nl_progress !== 'Complete'">
+            <div class="col-xs-3">
+              <div class="form-group">
+                <label>Name</label>
+                <input type="text" class="form-control" value="{{eval.name}}">
+                <input type="text" class="form-control" value="{{eval.acknowledgements.emp_date || 'Incomplete'}}">
+              </div>
+            </div>
+            <div class="col-xs-3">
+              <div class="form-group">
+                <label>Supervisor</label>
+                <input type="text" class="form-control" value="{{eval.supervisor}}">
+                <input type="text" class="form-control" value="{{eval.acknowledgements.sup_date || 'Incomplete'}}">
+              </div>
+            </div>
+            <div class="col-xs-3">
+              <div class="form-group">
+                <label>Meeting</label>
+                <input type="text" class="form-control" value="{{eval.acknowledgements.verify_date || 'Incomplete'}}">
+              </div>
+            </div>
+            <div class="col-xs-3">
+              <div class="form-group">
+                <label>Next-Level</label>
+                <input type="text" class="form-control" value="{{eval.next_level}}">
+                <input type="text" class="form-control" value="{{eval.acknowledgements.nl_date || 'Incomplete'}}">
+              </div>
+            </div>
+          </div>
+          </div>
+        </div>
+        <!-- End Incomplete -->
+        </td>
+        </tr>
+        </tbody>
+        </table>
+      </div>
+</div>
+</form>
+</div>
+
+<footer class="footer navbar navbar-fixed-bottom" data-ng-class="completionFilter ? 'hidden' : ''">
+  <div class="col-md-12" style="background-color: white; border-top: 1px solid silver; margin-top: 1em;">
+    <div class="col-md-2">
+      <img src="images/RCC_logo_devops.png" alt="RCC Developer Operations" width="125" height="102" />
+    </div>
+    <div class="col-md-2">
+      <h4>Phone</h4>
+      <p>(910) 410-1822</p>
+    </div>
+    <div class="col-md-2">
+      <h4>Email</h4>
+      <p>ragaddy@richmondcc.edu</p>
+    </div>
+    <div class="col-md-2">
+      <h4>Chat</h4>
+      <p>(Currently Offline)</p>
+    </div>
+    <div class="col-md-2">
+      <h4>Report Bug</h4>
+      <p>(Currently Offline)</p>
+    </div>
+  </div>
+</footer>

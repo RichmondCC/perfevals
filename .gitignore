@@ -1,0 +1,6 @@
+node_modules
+encryption
+public/.well-known
+public/uploads/current
+public/uploads/updated
+app.js

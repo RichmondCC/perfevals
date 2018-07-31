@@ -1,0 +1,1683 @@
+<nav class="navbar navbar-default navbar-fixed-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+      <a class="navbar-brand" href="#/">
+                <img src="images/RCC_logo_torch_color.png" alt="RCC Logo" width="50" height="60" style="float: left;" />
+                <span style="clear: both; margin-left: .5em; font-size: 1.75em; font-weight: bold; color: black;">Performance Evaluations</span>
+            </a>
+
+    </div>
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="btn btn-info" data-ng-show="collapsed && loggedIn" data-ng-click="expand_all()" style="margin-top: .5em; margin-right: 1em;">
+          Expand All <span class="glyphicon glyphicon-chevron-down"></span>
+        </li>
+        <li class="btn btn-info" data-ng-hide="collapsed || !loggedIn" data-ng-click="collapse_all()" style="margin-top: .5em; margin-right: 1em;">
+          Collapse All <span class="glyphicon glyphicon-chevron-up"></span>
+        </li>
+        <li class="btn btn-primary" data-ng-show="loggedIn" data-toggle="modal" data-target="#eval_select" data-ng-click="reset_form()" style="margin-top: .5em; margin-right: 1em;">
+          Select Eval <span class="glyphicon glyphicon-th-list"></span>
+        </li>
+        <li class="btn btn-success" data-ng-show="loggedIn" data-ng-click="toggle_printable()" style="margin-top: .5em; margin-right: 1em;">
+          Printable <span class="glyphicon glyphicon-print"></span>
+        </li>
+        <li class="btn btn-primary" style="margin-top: .5em; margin-right: 1em;" data-ng-click="admin_panel()" data-ng-show="isAdmin || isPrez">
+          Admin <span class="glyphicon glyphicon-cog"></span>
+        </li>
+      </ul>
+      <form class="navbar-form navbar-right" role="login" data-ng-hide="loggedIn" data-ng-submit="login(login_username, login_password)">
+        <div class="form-group">
+          <input class="form-control" data-ng-model="login_username" placeholder="Username" type="text">
+        </div>
+        <div class="form-group">
+          <input class="form-control" data-ng-model="login_password" placeholder="Password" type="password">
+        </div>
+        <button type="submit" class="btn btn-primary">Log in</button>
+      </form>
+      <form class="navbar-form navbar-right" role="login" data-ng-show="loggedIn" data-ng-submit="logout()">
+        <span>Welcome, {{name}}.</span>
+        <button type="submit" class="btn btn-primary">Log out</button>
+      </form>
+    </div>
+  </div>
+</nav>
+<div id="wait" class="modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Please Wait...</h4>
+      </div>
+      <div class="modal-body">
+        <div class="col-md-6 col-md-offset-3">
+          <image src="images\loading.gif" />
+        </div>
+      </div>
+      <div class="modal-footer">
+
+      </div>
+    </div>
+  </div>
+</div>
+<div id="login_error" class="modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Error</h4>
+      </div>
+      <div class="modal-body">
+        <h6>There was a problem with your username or password.</h6>
+        <p>Please try again or contact the help desk for further assistance.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Okay</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div id="eval_select" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Select Evaluation</h4>
+      </div>
+      <div class="modal-body">
+        <div class="btn-group btn-group-justified">
+          <a class="btn" data-ng-class="historyCurrent" data-ng-click="history_current()">Current</a>
+          <a class="btn" data-ng-class="historyPrevious" data-ng-click="history_previous()">Prior Years</a>
+        </div>
+
+        <div class="btn-group btn-group-justified" data-ng-show="isSuper">
+          <a class="btn btn-default" data-ng-click="select_eval_type('employee')" data-ng-show="evalType !== 'employee'">My Evals</a>
+          <a class="btn btn-primary" data-ng-click="select_eval_type('employee')" data-ng-show="evalType === 'employee'">My Evals</a>
+          <a class="btn btn-default" data-ng-click="select_eval_type('supervisor')" data-ng-show="evalType !== 'supervisor'">Direct Reports</a>
+          <a class="btn btn-primary" data-ng-click="select_eval_type('supervisor')" data-ng-show="evalType === 'supervisor'">Direct Reports</a>
+          <a class="btn btn-default" data-ng-click="select_eval_type('next_level')" data-ng-show="evalType !== 'next_level'">Indirect Reports</a>
+          <a class="btn btn-primary" data-ng-click="select_eval_type('next_level')" data-ng-show="evalType === 'next_level'">Indirect Reports</a>
+        </div>
+        <div data-ng-show="evalType === 'employee'">
+          <div data-ng-if="!history" data-ng-repeat="eval in relEvals | filter: {username: userName, years: yearOpts[0]} | orderBy: 'username'">
+            <input type="text" class="form-control" value="{{eval.name}} - {{eval.years}}">
+            <div class="modal-footer">
+              <div class="col-md-9">Be sure to click the dropdown arrow and select an evaluation to work on.</div>
+              <div class="col-md-3">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" data-ng-click="select_eval(eval._id)">Select</button>
+              </div>
+            </div>
+          </div>
+          <div data-ng-if="history">
+            <select class="form-control" data-ng-model="eval_selector_emp_prev">
+                      <option data-ng-repeat="eval in relEvals | filter: {username: userName, years: '!'+yearOpts[0]} | orderBy: 'username'"
+                        value="{{eval._id}}">{{eval.name}} - {{eval.years}}</option>
+                    </select>
+            <div class="modal-footer">
+              <div class="col-md-9">Be sure to click the dropdown arrow and select an evaluation to work on.</div>
+              <div class="col-md-3">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" data-ng-click="select_eval(eval_selector_emp_prev)">Select</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div data-ng-show="evalType === 'supervisor'">
+          <div data-ng-if="!history">
+            <select class="form-control" data-ng-model="eval_selector_sup_now">
+                    <option data-ng-repeat="eval in relEvals | filter: {supervisor: userName, years: yearOpts[0]} | orderBy: 'username'"
+                      value="{{eval._id}}">{{eval.name}} - {{eval.years}} => {{eval.acknowledgements.emp_progress}}{{eval.acknowledgements.sup_progress}}{{eval.acknowledgements.nl_progress}}</option>
+                </select>
+            <div class="modal-footer">
+              <div class="col-md-9">Be sure to click the dropdown arrow and select an evaluation to work on.</div>
+              <div class="col-md-3">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" data-ng-click="select_eval(eval_selector_sup_now)">Select</button>
+              </div>
+            </div>
+          </div>
+          <div data-ng-if="history">
+            <select class="form-control" data-ng-model="eval_selector_sup_prev">
+              <option data-ng-repeat="eval in relEvals | filter: {supervisor: userName, years: '!'+yearOpts[0]} | orderBy: 'username'"
+                value="{{eval._id}}">{{eval.name}} - {{eval.years}} => {{eval.acknowledgements.emp_progress}}{{eval.acknowledgements.sup_progress}}{{eval.acknowledgements.nl_progress}}</option>
+              </select>
+            <div class="modal-footer">
+              <div class="col-md-9">Be sure to click the dropdown arrow and select an evaluation to work on.</div>
+              <div class="col-md-3">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" data-ng-click="select_eval(eval_selector_sup_prev)">Select</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div data-ng-show="evalType === 'next_level'">
+          <div data-ng-if="!history">
+            <select class="form-control" data-ng-model="eval_selector_nl_now">
+              <option data-ng-repeat="eval in relEvals | filter: {next_level: userName, years: yearOpts[0]} | orderBy: 'username'"
+                value="{{eval._id}}">{{eval.name}} - {{eval.years}} => {{eval.acknowledgements.emp_progress}}{{eval.acknowledgements.sup_progress}}{{eval.acknowledgements.nl_progress}}</option>
+              </select>
+            <div class="modal-footer">
+              <div class="col-md-9">Be sure to click the dropdown arrow and select an evaluation to work on.</div>
+              <div class="col-md-3">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" data-ng-click="select_eval(eval_selector_nl_now)">Select</button>
+              </div>
+            </div>
+          </div>
+          <div data-ng-if="history">
+            <select class="form-control" data-ng-model="eval_selector_nl_prev">
+              <option data-ng-repeat="eval in relEvals | filter: {next_level: userName, years: '!'+yearOpts[0]} | orderBy: 'username'"
+                value="{{eval._id}}">{{eval.name}} - {{eval.years}} => {{eval.acknowledgements.emp_progress}}{{eval.acknowledgements.sup_progress}}{{eval.acknowledgements.nl_progress}}</option>
+            </select>
+            <div class="modal-footer">
+              <div class="col-md-9">Be sure to click the dropdown arrow and select an evaluation to work on.</div>
+              <div class="col-md-3">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" data-ng-click="select_eval(eval_selector_nl_prev)">Select</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div>
+</div>
+<div data-ng-hide="selected_eval !== 0">
+  <div class="jumbotron" style="padding: 5em;">
+    <h2>Welcome to RCC's Performance Evaluations Web App!</h2>
+    <h3>Please log-in above and select an eval to begin.</h3>
+  </div>
+  <div class="footer navbar navbar-fixed-bottom">
+    <div class="col-md-12" style="background-color: white; border-top: 1px solid silver; margin-top: 1em;">
+      <div class="col-md-2">
+        <img src="images/RCC_logo_devops.png" alt="RCC Developer Operations" width="125" height="102" />
+      </div>
+      <div class="col-md-2">
+        <h4>Phone</h4>
+        <p>(910) 410-1822</p>
+      </div>
+      <div class="col-md-2">
+        <h4>Email</h4>
+        <p>ragaddy@richmondcc.edu</p>
+      </div>
+      <div class="col-md-2">
+        <h4>Chat</h4>
+        <p>(Currently Offline)</p>
+      </div>
+      <div class="col-md-2">
+        <h4>Report Bug</h4>
+        <p>(Currently Offline)</p>
+      </div>
+    </div>
+  </div>
+</div>
+<form id="mainForm" data-ng-show="selected_eval !== 0">
+  <div class="col-sm-10 col-sm-offset-1" style="margin-bottom: 175px">
+    <div class="panel panel-default">
+      <div class="panel-heading">Employee
+        <span class="pull-right">
+          <span class="glyphicon glyphicon-chevron-up"
+          data-ng-click="collapse('employee_info')"
+          data-ng-show="(employee_collapse !== 'collapse')">
+          </span>
+        <span class="glyphicon glyphicon-chevron-down" data-ng-click="expand('employee_info')" data-ng-hide="(employee_collapse !== 'collapse')">
+          </span>
+        </span>
+      </div>
+      <div data-ng-class="employee_collapse" class="panel-body">
+        <div class="form-group col-md-6">
+          <label for="name" class="control-label">Name</label>
+          <input class="form-control" type="text" name="name" value="{{selectedEval[0].name}}" placeholder="Name" disabled />
+        </div>
+        <div class="form-group col-md-6">
+          <label for="title" class="control-label">Title</label>
+          <input class="form-control" type="text" name="title" value="{{selectedEval[0].title}}" placeholder="Title" disabled />
+        </div>
+        <div class="form-group col-md-6">
+          <label for="division" class="control-label">Division</label>
+          <input class="form-control" type="text" name="division" value="{{selectedEval[0].division}}" placeholder="Division" disabled />
+        </div>
+        <div class="form-group col-md-6">
+          <label for="department" class="control-label">Department</label>
+          <input class="form-control" type="text" name="department" value="{{selectedEval[0].department}}" placeholder="Department" disabled />
+        </div>
+      </div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">Job Description
+        <span class="pull-right">
+          <span class="glyphicon glyphicon-chevron-up"
+          data-ng-click="collapse('job_desc')"
+          data-ng-show="(job_desc_collapse !== 'collapse')">
+          </span>
+        <span class="glyphicon glyphicon-chevron-down" data-ng-click="expand('job_desc')" data-ng-show="(job_desc_collapse === 'collapse')">
+          </span>
+        </span>
+      </div>
+      <div data-ng-class="job_desc_collapse" class="panel-body">
+        <div class="form-group col-md-6">
+          <label for="current_desc" class="control-label">Current Job Description</label>
+          <div class="input-group">
+            <input class="form-control" type="text" name="description_name" value="{{selectedEval[0].job_description.admin_desc_link}}" disabled>
+            <span class="input-group-addon">
+              <a href="/evals/uploads/current/{{selectedEval[0].job_description.admin_desc_link}}" target="_blank" class="btn btn-xs btn-primary">View</a>
+            </span>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group col-md-12">
+            <div class="col-md-8">
+              <h5>Reviewed and updated job description?</h5>
+            </div>
+            <div class="col-md-4">
+              <button class="btn btn-sm btn-danger" data-ng-hide="reviewed_date" data-ng-click="set_slider('reviewed_date')" data-ng-disabled="evalType !== 'supervisor' || selectedEval[0].acknowledgements.sup_ack || sup_date">
+                <strong>No</strong></button>
+              <button class="btn btn-sm btn-success" data-ng-show="reviewed_date" data-ng-click="set_slider('reviewed_date')" data-ng-disabled="evalType !== 'supervisor' || selectedEval[0].acknowledgements.sup_ack || sup_date">
+                <strong>Yes</strong></button>
+              <input type="hidden" data-ng-model="reviewed_date" disabled />
+            </div>
+          </div>
+          <div class="form-group col-md-12">
+            <div class="col-md-8">
+              <h5>Sent updated job description to HR?</h5>
+            </div>
+            <div class="col-md-4">
+              <button class="btn btn-sm btn-danger" data-ng-hide="updated_date" data-ng-click="set_slider('updated_date')" data-ng-disabled="evalType !== 'supervisor' || selectedEval[0].acknowledgements.sup_ack || sup_date">
+                <strong>No</strong></button>
+              <button class="btn btn-sm btn-success" data-ng-show="updated_date" data-ng-click="set_slider('updated_date')" data-ng-disabled="evalType !== 'supervisor' || selectedEval[0].acknowledgements.sup_ack || sup_date">
+                <strong>Yes</strong></button>
+              <input type="hidden" data-ng-model="updated_date" disabled />
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Skills Panel V2 -->
+    <div class="panel panel-default">
+      <div class="panel-heading clearfix">
+        Skills <span class="glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="hover" data-placement="right" data-html="true" title="<h4>Competency Scale</h4>" data-content="<dl>
+                    <dt>Exceeds Expectations</dt>
+                    <dd>Exceeds the performance requirements of the position.</dd>
+                    <dt>Meets Expectations</dt>
+                    <dd>Meets the performance requirements of the position.</dd>
+                    <dt>Unsatisfactory/Needs Improvement</dt>
+                    <dd>Does not meet the performance requirements of the position.</dd>
+                    <dt>N/A</dt>
+                    <dd>Unable to determine a rating due to lack of evidence or support to give an appropriate rating.</dd>
+                  </dl>"></span>
+        <span class="pull-right">
+        <span class="glyphicon glyphicon-chevron-up"
+          data-ng-click="collapse('skills')"
+          data-ng-show="(skills_collapse !== 'collapse')">
+        </span>
+        <span class="glyphicon glyphicon-chevron-down" data-ng-click="expand('skills')" data-ng-hide="(skills_collapse !== 'collapse')">
+        </span>
+        </span>
+      </div>
+      <div data-ng-class="skills_collapse" class="panel-body">
+        <!-- <div class="panel-body"> -->
+
+        <!-- Ratings Headers -->
+        <div class="row hidden-sm">
+          <div class="col-md-4 col-md-offset-2">
+            <h5>Employee Rating</h5></div>
+          <div class="col-md-4 col-md-offset-1">
+            <h5>Supervisor Rating</h5></div>
+        </div>
+
+        <!-- Duties Block -->
+        <div class="row" style="background-color: whitesmoke; padding:.5em;">
+          <!-- Duties Label -->
+          <div class="col-md-2">
+            <h5>Duties
+            <span
+              class="glyphicon glyphicon-question-sign"
+              data-toggle="popover"
+              data-trigger="hover"
+              data-placement="right"
+              title="Duties"
+              data-content="Review the job description and then consider how
+                well the expectations identified are met by the employee. For
+                all employees, consider Administrative Duties (e.g. Work
+                Knowledge, Work Quality, and Accomplishing Assigned Duties).
+                For faculty, consider the following as well: Quality of
+                Instruction (e.g. Assessing as a Tool for Teaching and
+                Learning, Learning-Centered Teaching Methods, Technology as a
+                Tool for Teaching and Learning)."></span>
+          </h5>
+          </div>
+          <!-- Duties Selector Employee -->
+          <div class="col-md-5">
+            <h5 class="visible-sm">Employee Rating</h5>
+            <!-- Show Value-->
+            <select data-ng-disabled="(selectedEval[0].acknowledgements.emp_ack || evalType !== 'employee')" data-ng-if="(evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)" name="" id="emp_job_duties"
+              class="form-control">
+              <option value="{{selectedEval[0].core_skills.duties.employee_rating}}">
+              {{selectedEval[0].core_skills.duties.employee_rating}}
+              </option>
+              <option value="Exceeds Expectations">Exceeds Expectations</option>
+              <option value="Meets Expectations">Meets Expectations</option>
+              <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+              <option value="N/A">N/A</option>
+            </select>
+            <!-- Don't Show Value -->
+            <select data-ng-disabled="(selectedEval[0].acknowledgements.emp_ack || evalType !== 'employee')" data-ng-if="(!(evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack))" name="" id="emp_job_duties"
+              class="form-control">
+              <option value="-----">-----</option>
+              <option value="Exceeds Expectations">Exceeds Expectations</option>
+              <option value="Meets Expectations">Meets Expectations</option>
+              <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+              <option value="N/A">N/A</option>
+            </select>
+            <!-- Duties Employee Comment Button -->
+            <button style="margin-top: .5em;" data-ng-disabled="(selectedEval[0].acknowledgements.emp_ack || evalType !== 'employee')" class="btn btn-info form-control active" data-ng-click="toggleComments('emp_duties')" data-ng-if="!(show_emp_duties_comments ||
+              selectedEval[0].core_skills.duties.employee_comment && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack ||
+              selectedEval[0].core_skills.duties.employee_comment && evalType === 'employee')">
+            Comment</button>
+            <!-- Duties Comment Box Employee -->
+            <textarea style="margin-top: .5em;" data-ng-disabled="(selectedEval[0].acknowledgements.emp_ack || evalType !== 'employee')" data-ng-if="show_emp_duties_comments ||
+              selectedEval[0].core_skills.duties.employee_comment && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack ||
+              selectedEval[0].core_skills.duties.employee_comment && evalType === 'employee'
+              " name="emp_job_duties_comment" id="emp_job_duties_comment" class="form-control">{{selectedEval[0].core_skills.duties.employee_comment}}</textarea>
+          </div>
+          <!-- Duties Selector Supervisor -->
+          <div class="col-md-5">
+            <h5 class="visible-sm">Supervisor Rating</h5>
+            <!-- Show Value-->
+            <select data-ng-disabled="(selectedEval[0].acknowledgements.sup_ack || evalType !== 'supervisor')" data-ng-if="(evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)" name="sup_job_duties" id="sup_job_duties"
+              class="form-control">
+            <option value="{{selectedEval[0].core_skills.duties.supervisor_rating}}">
+            {{selectedEval[0].core_skills.duties.supervisor_rating}}
+            </option>
+            <option value="Exceeds Expectations">Exceeds Expectations</option>
+            <option value="Meets Expectations">Meets Expectations</option>
+            <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+            <option value="N/A">N/A</option>
+          </select>
+            <!-- Don't Show Value -->
+            <select data-ng-disabled="(selectedEval[0].acknowledgements.sup_ack || evalType !== 'supervisor')" data-ng-if="(!(evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack))" name="sup_job_duties"
+              id="sup_job_duties" class="form-control">
+            <option value="-----">-----</option>
+            <option value="Exceeds Expectations">Exceeds Expectations</option>
+            <option value="Meets Expectations">Meets Expectations</option>
+            <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+            <option value="N/A">N/A</option>
+          </select>
+            <!-- Duties Supervisor Comment Button -->
+            <button style="margin-top: .5em" data-ng-disabled="(selectedEval[0].acknowledgements.sup_ack || evalType !== 'supervisor')" class="btn btn-info form-control active" data-ng-click="toggleComments('sup_duties')" data-ng-if="!(show_sup_duties_comments ||
+              selectedEval[0].core_skills.duties.supervisor_comment && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack ||
+              selectedEval[0].core_skills.duties.supervisor_comment && evalType === 'supervisor')">
+            Comment</button>
+            <!-- Duties Comment Box Supervisor -->
+            <textarea style="margin-top: .5em" data-ng-disabled="(selectedEval[0].acknowledgements.sup_ack || evalType !== 'supervisor')" data-ng-if="show_sup_duties_comments ||
+              selectedEval[0].core_skills.duties.supervisor_comment && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack ||
+              selectedEval[0].core_skills.duties.supervisor_comment && evalType === 'supervisor'" name="sup_job_duties_" id="sup_job_duties_" class="form-control">{{selectedEval[0].core_skills.duties.supervisor_comment}}</textarea>
+          </div>
+        </div>
+        <!-- End Duties Block-->
+
+        <!-- Teamwork Block -->
+        <div class="row" style="padding:.5em;">
+          <!-- Teamwork Label -->
+          <div class="col-md-2">
+            <h5>Teamwork
+            <span
+              class="glyphicon glyphicon-question-sign"
+              data-toggle="popover"
+              data-trigger="hover"
+              data-placement="right"
+              title="Teamwork"
+              data-content="Treats co-workers with respect. Meets commitments to others. Serves on committees or work groups and assumes fair share of tasks. Resolves college-related issues and disputes in a professional manner, utilizing the appropriate college policy & procedure, etc."></span>
+          </h5>
+          </div>
+          <!-- Teamwork Selector Employee -->
+          <div class="col-md-5">
+            <h5 class="visible-sm">Employee Rating</h5>
+            <!-- Show Value-->
+            <select data-ng-disabled="(selectedEval[0].acknowledgements.emp_ack || evalType !== 'employee')" data-ng-if="(evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)" name="" id="emp_teamwork" class="form-control">
+              <option value="{{selectedEval[0].core_skills.teamwork.employee_rating}}">
+              {{selectedEval[0].core_skills.teamwork.employee_rating}}
+              </option>
+              <option value="Exceeds Expectations">Exceeds Expectations</option>
+              <option value="Meets Expectations">Meets Expectations</option>
+              <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+              <option value="N/A">N/A</option>
+            </select>
+            <!-- Don't Show Value -->
+            <select data-ng-disabled="(selectedEval[0].acknowledgements.emp_ack || evalType !== 'employee')" data-ng-if="(!(evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack))" name="" id="emp_teamwork"
+              class="form-control">
+              <option value="-----">-----</option>
+              <option value="Exceeds Expectations">Exceeds Expectations</option>
+              <option value="Meets Expectations">Meets Expectations</option>
+              <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+              <option value="N/A">N/A</option>
+            </select>
+            <!-- Teamwork Employee Comment Button -->
+            <button style="margin-top: .5em;" data-ng-disabled="(selectedEval[0].acknowledgements.emp_ack || evalType !== 'employee')" class="btn btn-info form-control active" data-ng-click="toggleComments('emp_teamwork')" data-ng-if="!(show_emp_teamwork_comments ||
+              selectedEval[0].core_skills.teamwork.employee_comment && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack ||
+              selectedEval[0].core_skills.teamwork.employee_comment && evalType === 'employee')">
+            Comment</button>
+            <!-- Teamwork Comment Box Employee -->
+            <textarea style="margin-top: .5em;" data-ng-disabled="(selectedEval[0].acknowledgements.emp_ack || evalType !== 'employee')" data-ng-if="show_emp_teamwork_comments ||
+              selectedEval[0].core_skills.teamwork.employee_comment && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack ||
+              selectedEval[0].core_skills.teamwork.employee_comment && evalType === 'employee'
+              " name="emp_teamwork_comment" id="emp_teamwork_comment" class="form-control">{{selectedEval[0].core_skills.teamwork.employee_comment}}</textarea>
+          </div>
+          <!-- Teamwork Selector Supervisor -->
+          <div class="col-md-5">
+            <h5 class="visible-sm">Supervisor Rating</h5>
+            <!-- Show Value-->
+            <select data-ng-disabled="(selectedEval[0].acknowledgements.sup_ack || evalType !== 'supervisor')" data-ng-if="(evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)" name="sup_teamwork" id="sup_teamwork"
+              class="form-control">
+            <option value="{{selectedEval[0].core_skills.teamwork.supervisor_rating}}">
+            {{selectedEval[0].core_skills.teamwork.supervisor_rating}}
+            </option>
+            <option value="Exceeds Expectations">Exceeds Expectations</option>
+            <option value="Meets Expectations">Meets Expectations</option>
+            <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+            <option value="N/A">N/A</option>
+          </select>
+            <!-- Don't Show Value -->
+            <select data-ng-disabled="(selectedEval[0].acknowledgements.sup_ack || evalType !== 'supervisor')" data-ng-if="(!(evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack))" name="sup_teamwork" id="sup_teamwork"
+              class="form-control">
+            <option value="-----">-----</option>
+            <option value="Exceeds Expectations">Exceeds Expectations</option>
+            <option value="Meets Expectations">Meets Expectations</option>
+            <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+            <option value="N/A">N/A</option>
+          </select>
+            <!-- Teamwork Supervisor Comment Button -->
+            <button style="margin-top: .5em" data-ng-disabled="(selectedEval[0].acknowledgements.sup_ack || evalType !== 'supervisor')" class="btn btn-info form-control active" data-ng-click="toggleComments('sup_teamwork')" data-ng-if="!(show_sup_teamwork_comments ||
+              selectedEval[0].core_skills.teamwork.supervisor_comment && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack ||
+              selectedEval[0].core_skills.teamwork.supervisor_comment && evalType === 'supervisor')">
+            Comment</button>
+            <!-- Teamwork Comment Box Supervisor -->
+            <textarea style="margin-top: .5em" data-ng-disabled="(selectedEval[0].acknowledgements.sup_ack || evalType !== 'supervisor')" data-ng-if="show_sup_teamwork_comments ||
+              selectedEval[0].core_skills.teamwork.supervisor_comment && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack ||
+              selectedEval[0].core_skills.teamwork.supervisor_comment && evalType === 'supervisor'
+              " name="sup_teamwork_comment" id="sup_teamwork_comment" class="form-control">{{selectedEval[0].core_skills.teamwork.supervisor_comment}}</textarea>
+          </div>
+        </div>
+        <!-- End Teamwork Block-->
+
+        <!-- Dependability Block -->
+        <div class="row" style="background-color: whitesmoke; padding:.5em;">
+          <!-- Dependability Label -->
+          <div class="col-md-2">
+            <h5>Dependability
+            <span
+              class="glyphicon glyphicon-question-sign"
+              data-toggle="popover"
+              data-trigger="hover"
+              data-placement="right"
+              title="Dependability"
+              data-content="Reports to work as scheduled and seeks approval from supervisor in advance for any changes to the established work schedule. Devotes full effort to job responsibilities during work hours. Reliably fulfills basic job responsibilities."></span>
+          </h5>
+          </div>
+          <!-- Dependability Selector Employee -->
+          <div class="col-md-5">
+            <h5 class="visible-sm">Employee Rating</h5>
+            <!-- Show Value-->
+            <select data-ng-disabled="(selectedEval[0].acknowledgements.emp_ack || evalType !== 'employee')" data-ng-if="(evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)" name="emp_dependability" id="emp_dependability"
+              class="form-control">
+              <option value="{{selectedEval[0].core_skills.dependability.employee_rating}}">
+              {{selectedEval[0].core_skills.dependability.employee_rating}}
+              </option>
+              <option value="Exceeds Expectations">Exceeds Expectations</option>
+              <option value="Meets Expectations">Meets Expectations</option>
+              <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+              <option value="N/A">N/A</option>
+            </select>
+            <!-- Don't Show Value -->
+            <select data-ng-disabled="(selectedEval[0].acknowledgements.emp_ack || evalType !== 'employee')" data-ng-if="(!(evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack))" name="emp_dependability"
+              id="emp_dependability" class="form-control">
+              <option value="-----">-----</option>
+              <option value="Exceeds Expectations">Exceeds Expectations</option>
+              <option value="Meets Expectations">Meets Expectations</option>
+              <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+              <option value="N/A">N/A</option>
+            </select>
+            <!-- Dependability Employee Comment Button -->
+            <button style="margin-top: .5em;" data-ng-disabled="(selectedEval[0].acknowledgements.emp_ack || evalType !== 'employee')" class="btn btn-info form-control active" data-ng-click="toggleComments('emp_dependability')" data-ng-if="!(show_emp_dependability_comments ||
+              selectedEval[0].core_skills.dependability.employee_comment && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack ||
+              selectedEval[0].core_skills.dependability.employee_comment && evalType === 'employee')">
+            Comment</button>
+            <!-- Dependability Comment Box Employee -->
+            <textarea style="margin-top: .5em;" data-ng-disabled="(selectedEval[0].acknowledgements.emp_ack || evalType !== 'employee')" data-ng-if="show_emp_dependability_comments ||
+              selectedEval[0].core_skills.dependability.employee_comment && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack ||
+              selectedEval[0].core_skills.dependability.employee_comment && evalType === 'employee'
+              " name="emp_dependability_comment" id="emp_dependability_comment" class="form-control">{{selectedEval[0].core_skills.dependability.employee_comment}}</textarea>
+          </div>
+          <!-- Dependability Selector Supervisor -->
+          <div class="col-md-5">
+            <h5 class="visible-sm">Supervisor Rating</h5>
+            <!-- Show Value-->
+            <select data-ng-disabled="(selectedEval[0].acknowledgements.sup_ack || evalType !== 'supervisor')" data-ng-if="(evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)" name="sup_dependability"
+              id="sup_dependability" class="form-control">
+            <option value="{{selectedEval[0].core_skills.dependability.supervisor_rating}}">
+            {{selectedEval[0].core_skills.dependability.supervisor_rating}}
+            </option>
+            <option value="Exceeds Expectations">Exceeds Expectations</option>
+            <option value="Meets Expectations">Meets Expectations</option>
+            <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+            <option value="N/A">N/A</option>
+          </select>
+            <!-- Don't Show Value -->
+            <select data-ng-disabled="(selectedEval[0].acknowledgements.sup_ack || evalType !== 'supervisor')" data-ng-if="(!(evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack))" name="sup_dependability"
+              id="sup_dependability" class="form-control">
+            <option value="-----">-----</option>
+            <option value="Exceeds Expectations">Exceeds Expectations</option>
+            <option value="Meets Expectations">Meets Expectations</option>
+            <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+            <option value="N/A">N/A</option>
+          </select>
+            <!-- Dependability Supervisor Comment Button -->
+            <button style="margin-top: .5em" data-ng-disabled="(selectedEval[0].acknowledgements.sup_ack || evalType !== 'supervisor')" class="btn btn-info form-control active" data-ng-click="toggleComments('sup_dependability')" data-ng-if="!(show_sup_dependability_comments ||
+              selectedEval[0].core_skills.dependability.supervisor_comment && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack ||
+              selectedEval[0].core_skills.dependability.supervisor_comment && evalType === 'supervisor')">
+            Comment</button>
+            <!-- Dependability Comment Box Supervisor -->
+            <textarea style="margin-top: .5em" data-ng-disabled="(selectedEval[0].acknowledgements.sup_ack || evalType !== 'supervisor')" data-ng-if="show_sup_dependability_comments ||
+              selectedEval[0].core_skills.dependability.supervisor_comment && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack ||
+              selectedEval[0].core_skills.dependability.supervisor_comment && evalType === 'supervisor'
+              " name="sup_dependability_comment" id="sup_dependability_comment" class="form-control">{{selectedEval[0].core_skills.dependability.supervisor_comment}}</textarea>
+          </div>
+        </div>
+        <!-- End Dependability Block-->
+
+        <!-- Judgement Block -->
+        <div class="row" style="padding:.5em;">
+          <!-- Judgement Label -->
+          <div class="col-md-2">
+            <h5>Judgement
+            <span
+              class="glyphicon glyphicon-question-sign"
+              data-toggle="popover"
+              data-trigger="hover"
+              data-placement="right"
+              title="Judgement"
+              data-content="Makes work-related decisions and/or takes actions that are in the best interest of the program and college. Uses equipment, time, and resources judiciously and as authorized. Protects and maintains college property and equipment."></span>
+          </h5>
+          </div>
+          <!-- Judgement Selector Employee -->
+          <div class="col-md-5">
+            <h5 class="visible-sm">Employee Rating</h5>
+            <!-- Show Value-->
+            <select data-ng-disabled="(selectedEval[0].acknowledgements.emp_ack || evalType !== 'employee')" data-ng-if="(evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)" name="emp_judgement" id="emp_judgement"
+              class="form-control">
+              <option value="{{selectedEval[0].core_skills.judgement.employee_rating}}">
+              {{selectedEval[0].core_skills.judgement.employee_rating}}
+              </option>
+              <option value="Exceeds Expectations">Exceeds Expectations</option>
+              <option value="Meets Expectations">Meets Expectations</option>
+              <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+              <option value="N/A">N/A</option>
+            </select>
+            <!-- Don't Show Value -->
+            <select data-ng-disabled="(selectedEval[0].acknowledgements.emp_ack || evalType !== 'employee')" data-ng-if="(!(evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack))" name="emp_judgement" id="emp_judgement"
+              class="form-control">
+              <option value="-----">-----</option>
+              <option value="Exceeds Expectations">Exceeds Expectations</option>
+              <option value="Meets Expectations">Meets Expectations</option>
+              <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+              <option value="N/A">N/A</option>
+            </select>
+            <!-- Judgement Employee Comment Button -->
+            <button style="margin-top: .5em;" data-ng-disabled="(selectedEval[0].acknowledgements.emp_ack || evalType !== 'employee')" class="btn btn-info form-control active" data-ng-click="toggleComments('emp_judgement')" data-ng-if="!(show_emp_judgement_comments ||
+              selectedEval[0].core_skills.judgement.employee_comment && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack ||
+              selectedEval[0].core_skills.judgement.employee_comment && evalType === 'employee')">
+            Comment</button>
+            <!-- Judgement Comment Box Employee -->
+            <textarea style="margin-top: .5em;" data-ng-disabled="(selectedEval[0].acknowledgements.emp_ack || evalType !== 'employee')" data-ng-if="show_emp_judgement_comments ||
+              selectedEval[0].core_skills.judgement.employee_comment && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack ||
+              selectedEval[0].core_skills.judgement.employee_comment && evalType === 'employee'
+              " name="emp_judgement_comment" id="emp_judgement_comment" class="form-control">{{selectedEval[0].core_skills.judgement.employee_comment}}</textarea>
+          </div>
+          <!-- Judgement Selector Supervisor -->
+          <div class="col-md-5">
+            <h5 class="visible-sm">Supervisor Rating</h5>
+            <!-- Show Value-->
+            <select data-ng-disabled="(selectedEval[0].acknowledgements.sup_ack || evalType !== 'supervisor')" data-ng-if="(evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)" name="sup_judgement" id="sup_judgement"
+              class="form-control">
+            <option value="{{selectedEval[0].core_skills.judgement.supervisor_rating}}">
+            {{selectedEval[0].core_skills.judgement.supervisor_rating}}
+            </option>
+            <option value="Exceeds Expectations">Exceeds Expectations</option>
+            <option value="Meets Expectations">Meets Expectations</option>
+            <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+            <option value="N/A">N/A</option>
+          </select>
+            <!-- Don't Show Value -->
+            <select data-ng-disabled="(selectedEval[0].acknowledgements.sup_ack || evalType !== 'supervisor')" data-ng-if="(!(evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack))" name="sup_judgement"
+              id="sup_judgement" class="form-control">
+            <option value="-----">-----</option>
+            <option value="Exceeds Expectations">Exceeds Expectations</option>
+            <option value="Meets Expectations">Meets Expectations</option>
+            <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+            <option value="N/A">N/A</option>
+          </select>
+            <!-- Judgement Supervisor Comment Button -->
+            <button style="margin-top: .5em" data-ng-disabled="(selectedEval[0].acknowledgements.sup_ack || evalType !== 'supervisor')" class="btn btn-info form-control active" data-ng-click="toggleComments('sup_judgement')" data-ng-if="!(show_sup_judgement_comments ||
+              selectedEval[0].core_skills.judgement.supervisor_comment && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack ||
+              selectedEval[0].core_skills.judgement.supervisor_comment && evalType === 'supervisor')">
+            Comment</button>
+            <!-- Judgement Comment Box Supervisor -->
+            <textarea style="margin-top: .5em" data-ng-disabled="(selectedEval[0].acknowledgements.sup_ack || evalType !== 'supervisor')" data-ng-if="show_sup_judgement_comments ||
+              selectedEval[0].core_skills.judgement.supervisor_comment && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack ||
+              selectedEval[0].core_skills.judgement.supervisor_comment && evalType === 'supervisor'
+              " name="sup_judgement_comment" id="sup_judgement_comment" class="form-control">{{selectedEval[0].core_skills.judgement.supervisor_comment}}</textarea>
+          </div>
+        </div>
+        <!-- End Judgement Block-->
+
+        <!-- Ethics Block -->
+        <div class="row" style="background-color: whitesmoke; padding:.5em;">
+          <!-- Ethics Label -->
+          <div class="col-md-2">
+            <h5>Ethics
+            <span
+              class="glyphicon glyphicon-question-sign"
+              data-toggle="popover"
+              data-trigger="hover"
+              data-placement="right"
+              title="Ethics"
+              data-content="Performs duties and responsibilities with honesty and integrity. Takes steps to prevent breaches of confidentiality and/or security. Reports any inappropriate (fraudulent, illegal, unethical) activities. Will comply with all pertinent laws and regulations, etc."></span>
+          </h5>
+          </div>
+          <!-- Ethics Selector Employee -->
+          <div class="col-md-5">
+            <h5 class="visible-sm">Employee Rating</h5>
+            <!-- Show Value-->
+            <select data-ng-disabled="(selectedEval[0].acknowledgements.emp_ack || evalType !== 'employee')" data-ng-if="(evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)" name="emp_ethics" id="emp_ethics"
+              class="form-control">
+              <option value="{{selectedEval[0].core_skills.ethics.employee_rating}}">
+              {{selectedEval[0].core_skills.ethics.employee_rating}}
+              </option>
+              <option value="Exceeds Expectations">Exceeds Expectations</option>
+              <option value="Meets Expectations">Meets Expectations</option>
+              <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+              <option value="N/A">N/A</option>
+            </select>
+            <!-- Don't Show Value -->
+            <select data-ng-disabled="(selectedEval[0].acknowledgements.emp_ack || evalType !== 'employee')" data-ng-if="(!(evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack))" name="emp_ethics" id="emp_ethics"
+              class="form-control">
+              <option value="-----">-----</option>
+              <option value="Exceeds Expectations">Exceeds Expectations</option>
+              <option value="Meets Expectations">Meets Expectations</option>
+              <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+              <option value="N/A">N/A</option>
+            </select>
+            <!-- Ethics Employee Comment Button -->
+            <button style="margin-top: .5em;" data-ng-disabled="(selectedEval[0].acknowledgements.emp_ack || evalType !== 'employee')" class="btn btn-info form-control active" data-ng-click="toggleComments('emp_ethics')" data-ng-if="!(show_emp_ethics_comments ||
+              selectedEval[0].core_skills.ethics.employee_comment && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack ||
+              selectedEval[0].core_skills.ethics.employee_comment && evalType === 'employee')">
+            Comment</button>
+            <!-- Ethics Comment Box Employee -->
+            <textarea style="margin-top: .5em;" data-ng-disabled="(selectedEval[0].acknowledgements.emp_ack || evalType !== 'employee')" data-ng-if="show_emp_ethics_comments ||
+              selectedEval[0].core_skills.ethics.employee_comment && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack ||
+              selectedEval[0].core_skills.ethics.employee_comment && evalType === 'employee'
+              " name="emp_ethics_comment" id="emp_ethics_comment" class="form-control">{{selectedEval[0].core_skills.ethics.employee_comment}}</textarea>
+          </div>
+          <!-- Ethics Selector Supervisor -->
+          <div class="col-md-5">
+            <h5 class="visible-sm">Supervisor Rating</h5>
+            <!-- Show Value-->
+            <select data-ng-disabled="(selectedEval[0].acknowledgements.sup_ack || evalType !== 'supervisor')" data-ng-if="(evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)" name="sup_ethics" id="sup_ethics"
+              class="form-control">
+            <option value="{{selectedEval[0].core_skills.ethics.supervisor_rating}}">
+            {{selectedEval[0].core_skills.ethics.supervisor_rating}}
+            </option>
+            <option value="Exceeds Expectations">Exceeds Expectations</option>
+            <option value="Meets Expectations">Meets Expectations</option>
+            <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+            <option value="N/A">N/A</option>
+          </select>
+            <!-- Don't Show Value -->
+            <select data-ng-disabled="(selectedEval[0].acknowledgements.sup_ack || evalType !== 'supervisor')" data-ng-if="(!(evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack))" name="sup_ethics" id="sup_ethics"
+              class="form-control">
+            <option value="-----">-----</option>
+            <option value="Exceeds Expectations">Exceeds Expectations</option>
+            <option value="Meets Expectations">Meets Expectations</option>
+            <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+            <option value="N/A">N/A</option>
+          </select>
+            <!-- Ethics Supervisor Comment Button -->
+            <button style="margin-top: .5em" data-ng-disabled="(selectedEval[0].acknowledgements.sup_ack || evalType !== 'supervisor')" class="btn btn-info form-control active" data-ng-click="toggleComments('sup_ethics')" data-ng-if="!(show_sup_ethics_comments ||
+              selectedEval[0].core_skills.ethics.supervisor_comment && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack ||
+              selectedEval[0].core_skills.ethics.supervisor_comment && evalType === 'supervisor')">
+            Comment</button>
+            <!-- Ethics Comment Box Supervisor -->
+            <textarea style="margin-top: .5em" data-ng-disabled="(selectedEval[0].acknowledgements.sup_ack || evalType !== 'supervisor')" data-ng-if="show_sup_ethics_comments ||
+              selectedEval[0].core_skills.ethics.supervisor_comment && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack ||
+              selectedEval[0].core_skills.ethics.supervisor_comment && evalType === 'supervisor'
+              " name="sup_ethics_comment" id="sup_ethics_comment" class="form-control">{{selectedEval[0].core_skills.ethics.supervisor_comment}}</textarea>
+          </div>
+        </div>
+        <!-- End Ethics Block-->
+
+        <!-- Adaptability Block -->
+        <div class="row" style="padding:.5em;">
+          <!-- Adaptability Label -->
+          <div class="col-md-2">
+            <h5>Adaptability
+            <span
+              class="glyphicon glyphicon-question-sign"
+              data-toggle="popover"
+              data-trigger="hover"
+              data-placement="right"
+              title="Adaptability"
+              data-content="Adapts to new duties and assignments as needed by the college. Able to acclimate to changes to meetings and work requirements as needed."></span>
+          </h5>
+          </div>
+          <!-- Adaptability Selector Employee -->
+          <div class="col-md-5">
+            <h5 class="visible-sm">Employee Rating</h5>
+            <!-- Show Value-->
+            <select data-ng-disabled="(selectedEval[0].acknowledgements.emp_ack || evalType !== 'employee')" data-ng-if="(evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)" name="emp_adaptability" id="emp_adaptability"
+              class="form-control">
+              <option value="{{selectedEval[0].core_skills.adaptability.employee_rating}}">
+              {{selectedEval[0].core_skills.adaptability.employee_rating}}
+              </option>
+              <option value="Exceeds Expectations">Exceeds Expectations</option>
+              <option value="Meets Expectations">Meets Expectations</option>
+              <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+              <option value="N/A">N/A</option>
+            </select>
+            <!-- Don't Show Value -->
+            <select data-ng-disabled="(selectedEval[0].acknowledgements.emp_ack || evalType !== 'employee')" data-ng-if="(!(evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack))" name="emp_adaptability" id="emp_adaptability"
+              class="form-control">
+              <option value="-----">-----</option>
+              <option value="Exceeds Expectations">Exceeds Expectations</option>
+              <option value="Meets Expectations">Meets Expectations</option>
+              <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+              <option value="N/A">N/A</option>
+            </select>
+            <!-- Adaptability Employee Comment Button -->
+            <button style="margin-top: .5em;" data-ng-disabled="(selectedEval[0].acknowledgements.emp_ack || evalType !== 'employee')" class="btn btn-info form-control active" data-ng-click="toggleComments('emp_adaptability')" data-ng-if="!(show_emp_adaptability_comments ||
+              selectedEval[0].core_skills.adaptability.employee_comment && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack ||
+              selectedEval[0].core_skills.adaptability.employee_comment && evalType === 'employee')">
+            Comment</button>
+            <!-- Adaptability Comment Box Employee -->
+            <textarea style="margin-top: .5em;" data-ng-disabled="(selectedEval[0].acknowledgements.emp_ack || evalType !== 'employee')" data-ng-if="show_emp_adaptability_comments ||
+              selectedEval[0].core_skills.adaptability.employee_comment && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack ||
+              selectedEval[0].core_skills.adaptability.employee_comment && evalType === 'employee'
+              " name="emp_adaptability_comment" id="emp_adaptability_comment" class="form-control">{{selectedEval[0].core_skills.adaptability.employee_comment}}</textarea>
+          </div>
+          <!-- Adaptability Selector Supervisor -->
+          <div class="col-md-5">
+            <h5 class="visible-sm">Supervisor Rating</h5>
+            <!-- Show Value-->
+            <select data-ng-disabled="(selectedEval[0].acknowledgements.sup_ack || evalType !== 'supervisor')" data-ng-if="(evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)" name="sup_adaptability"
+              id="sup_adaptability" class="form-control">
+            <option value="{{selectedEval[0].core_skills.adaptability.supervisor_rating}}">
+            {{selectedEval[0].core_skills.adaptability.supervisor_rating}}
+            </option>
+            <option value="Exceeds Expectations">Exceeds Expectations</option>
+            <option value="Meets Expectations">Meets Expectations</option>
+            <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+            <option value="N/A">N/A</option>
+          </select>
+            <!-- Don't Show Value -->
+            <select data-ng-disabled="(selectedEval[0].acknowledgements.sup_ack || evalType !== 'supervisor')" data-ng-if="(!(evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack))" name="sup_adaptability"
+              id="sup_adaptability" class="form-control">
+            <option value="-----">-----</option>
+            <option value="Exceeds Expectations">Exceeds Expectations</option>
+            <option value="Meets Expectations">Meets Expectations</option>
+            <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+            <option value="N/A">N/A</option>
+          </select>
+            <!-- Adaptability Supervisor Comment Button -->
+            <button style="margin-top: .5em" data-ng-disabled="(selectedEval[0].acknowledgements.sup_ack || evalType !== 'supervisor')" class="btn btn-info form-control active" data-ng-click="toggleComments('sup_adaptability')" data-ng-if="!(show_sup_adaptability_comments ||
+              selectedEval[0].core_skills.adaptability.supervisor_comment && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack ||
+              selectedEval[0].core_skills.adaptability.supervisor_comment && evalType === 'supervisor')">
+            Comment</button>
+            <!-- Adaptability Comment Box Supervisor -->
+            <textarea style="margin-top: .5em" data-ng-disabled="(selectedEval[0].acknowledgements.sup_ack || evalType !== 'supervisor')" data-ng-if="show_sup_adaptability_comments ||
+              selectedEval[0].core_skills.adaptability.supervisor_comment && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack ||
+              selectedEval[0].core_skills.adaptability.supervisor_comment && evalType === 'supervisor'
+              " name="sup_adaptability_comment" id="sup_adaptability_comment" class="form-control">{{selectedEval[0].core_skills.adaptability.supervisor_comment}}</textarea>
+          </div>
+        </div>
+        <!-- End Adaptability Block-->
+
+        <!-- Communication Block -->
+        <div class="row" style="background-color: whitesmoke; padding:.5em;">
+          <!-- Communication Label -->
+          <div class="col-md-2">
+            <h5>Communication
+            <span
+              class="glyphicon glyphicon-question-sign"
+              data-toggle="popover"
+              data-trigger="hover"
+              data-placement="right"
+              title="Communication"
+              data-content="Expresses thoughts clearly and concisely when speaking or writing. Listens attentively and seeks clarification in situations of ambiguity or uncertainty. Effectively uses essential electronic communication tools of the college."></span>
+          </h5>
+          </div>
+          <!-- Communication Selector Employee -->
+          <div class="col-md-5">
+            <h5 class="visible-sm">Employee Rating</h5>
+            <!-- Show Value-->
+            <select data-ng-disabled="(selectedEval[0].acknowledgements.emp_ack || evalType !== 'employee')" data-ng-if="(evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)" name="emp_communication" id="emp_communication"
+              class="form-control">
+              <option value="{{selectedEval[0].core_skills.communication.employee_rating}}">
+              {{selectedEval[0].core_skills.communication.employee_rating}}
+              </option>
+              <option value="Exceeds Expectations">Exceeds Expectations</option>
+              <option value="Meets Expectations">Meets Expectations</option>
+              <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+              <option value="N/A">N/A</option>
+            </select>
+            <!-- Don't Show Value -->
+            <select data-ng-disabled="(selectedEval[0].acknowledgements.emp_ack || evalType !== 'employee')" data-ng-if="(!(evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack))" name="emp_communication"
+              id="emp_communication" class="form-control">
+              <option value="-----">-----</option>
+              <option value="Exceeds Expectations">Exceeds Expectations</option>
+              <option value="Meets Expectations">Meets Expectations</option>
+              <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+              <option value="N/A">N/A</option>
+            </select>
+            <!-- Communication Employee Comment Button -->
+            <button style="margin-top: .5em;" data-ng-disabled="(selectedEval[0].acknowledgements.emp_ack || evalType !== 'employee')" class="btn btn-info form-control active" data-ng-click="toggleComments('emp_communication')" data-ng-if="!(show_emp_communication_comments ||
+              selectedEval[0].core_skills.communication.employee_comment && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack ||
+              selectedEval[0].core_skills.communication.employee_comment && evalType === 'employee')">
+            Comment</button>
+            <!-- Communication Comment Box Employee -->
+            <textarea style="margin-top: .5em;" data-ng-disabled="(selectedEval[0].acknowledgements.emp_ack || evalType !== 'employee')" data-ng-if="show_emp_communication_comments ||
+              selectedEval[0].core_skills.communication.employee_comment && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack ||
+              selectedEval[0].core_skills.communication.employee_comment && evalType === 'employee'
+              " name="emp_communication_comment" id="emp_communication_comment" class="form-control">{{selectedEval[0].core_skills.communication.employee_comment}}</textarea>
+          </div>
+          <!-- Communication Selector Supervisor -->
+          <div class="col-md-5">
+            <h5 class="visible-sm">Supervisor Rating</h5>
+            <!-- Show Value-->
+            <select data-ng-disabled="(selectedEval[0].acknowledgements.sup_ack || evalType !== 'supervisor')" data-ng-if="(evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)" name="sup_communication"
+              id="sup_communication" class="form-control">
+            <option value="{{selectedEval[0].core_skills.communication.supervisor_rating}}">
+            {{selectedEval[0].core_skills.communication.supervisor_rating}}
+            </option>
+            <option value="Exceeds Expectations">Exceeds Expectations</option>
+            <option value="Meets Expectations">Meets Expectations</option>
+            <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+            <option value="N/A">N/A</option>
+          </select>
+            <!-- Don't Show Value -->
+            <select data-ng-disabled="(selectedEval[0].acknowledgements.sup_ack || evalType !== 'supervisor')" data-ng-if="(!(evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack))" name="sup_communication"
+              id="sup_communication" class="form-control">
+            <option value="-----">-----</option>
+            <option value="Exceeds Expectations">Exceeds Expectations</option>
+            <option value="Meets Expectations">Meets Expectations</option>
+            <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+            <option value="N/A">N/A</option>
+          </select>
+            <!-- Communication Supervisor Comment Button -->
+            <button style="margin-top: .5em" data-ng-disabled="(selectedEval[0].acknowledgements.sup_ack || evalType !== 'supervisor')" class="btn btn-info form-control active" data-ng-click="toggleComments('sup_communication')" data-ng-if="!(show_sup_communication_comments ||
+              selectedEval[0].core_skills.communication.supervisor_comment && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack ||
+              selectedEval[0].core_skills.communication.supervisor_comment && evalType === 'supervisor')">
+            Comment</button>
+            <!-- Communication Comment Box Supervisor -->
+            <textarea style="margin-top: .5em" data-ng-disabled="(selectedEval[0].acknowledgements.sup_ack || evalType !== 'supervisor')" data-ng-if="show_sup_communication_comments ||
+              selectedEval[0].core_skills.communication.supervisor_comment && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack ||
+              selectedEval[0].core_skills.communication.supervisor_comment && evalType === 'supervisor'
+              " name="sup_communication_comment" id="sup_communication_comment" class="form-control">{{selectedEval[0].core_skills.communication.supervisor_comment}}</textarea>
+          </div>
+        </div>
+        <!-- End Communication Block-->
+
+        <!-- Inclusiveness Block -->
+        <div class="row" style="padding:.5em;">
+          <!-- Inclusiveness Label -->
+          <div class="col-md-2">
+            <h5>Inclusiveness
+            <span
+              class="glyphicon glyphicon-question-sign"
+              data-toggle="popover"
+              data-trigger="hover"
+              data-placement="right"
+              title="Inclusiveness"
+              data-content="Treats others with consideration and respect. Establishes and maintains effective working relationships. Acts immediately to stop intimidating and/or insensitive behavior. Appreciates the value of diversity in the workplace."></span>
+          </h5>
+          </div>
+          <!-- Inclusiveness Selector Employee -->
+          <div class="col-md-5">
+            <h5 class="visible-sm">Employee Rating</h5>
+            <!-- Show Value-->
+            <select data-ng-disabled="(selectedEval[0].acknowledgements.emp_ack || evalType !== 'employee')" data-ng-if="(evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)" name="emp_inclusiveness" id="emp_inclusiveness"
+              class="form-control">
+              <option value="{{selectedEval[0].core_skills.inclusiveness.employee_rating}}">
+              {{selectedEval[0].core_skills.inclusiveness.employee_rating}}
+              </option>
+              <option value="Exceeds Expectations">Exceeds Expectations</option>
+              <option value="Meets Expectations">Meets Expectations</option>
+              <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+              <option value="N/A">N/A</option>
+            </select>
+            <!-- Don't Show Value -->
+            <select data-ng-disabled="(selectedEval[0].acknowledgements.emp_ack || evalType !== 'employee')" data-ng-if="(!(evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack))" name="emp_inclusiveness"
+              id="emp_inclusiveness" class="form-control">
+              <option value="-----">-----</option>
+              <option value="Exceeds Expectations">Exceeds Expectations</option>
+              <option value="Meets Expectations">Meets Expectations</option>
+              <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+              <option value="N/A">N/A</option>
+            </select>
+            <!-- Inclusiveness Employee Comment Button -->
+            <button style="margin-top: .5em;" data-ng-disabled="(selectedEval[0].acknowledgements.emp_ack || evalType !== 'employee')" class="btn btn-info form-control active" data-ng-click="toggleComments('emp_inclusiveness')" data-ng-if="!(show_emp_inclusiveness_comments ||
+              selectedEval[0].core_skills.inclusiveness.employee_comment && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack ||
+              selectedEval[0].core_skills.inclusiveness.employee_comment && evalType === 'employee')">
+            Comment</button>
+            <!-- Inclusiveness Comment Box Employee -->
+            <textarea style="margin-top: .5em;" data-ng-disabled="(selectedEval[0].acknowledgements.emp_ack || evalType !== 'employee')" data-ng-if="show_emp_inclusiveness_comments ||
+              selectedEval[0].core_skills.inclusiveness.employee_comment && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack ||
+              selectedEval[0].core_skills.inclusiveness.employee_comment && evalType === 'employee'
+              " name="emp_inclusiveness_comment" id="emp_inclusiveness_comment" class="form-control">{{selectedEval[0].core_skills.inclusiveness.employee_comment}}</textarea>
+          </div>
+          <!-- Inclusiveness Selector Supervisor -->
+          <div class="col-md-5">
+            <h5 class="visible-sm">Supervisor Rating</h5>
+            <!-- Show Value-->
+            <select data-ng-disabled="(selectedEval[0].acknowledgements.sup_ack || evalType !== 'supervisor')" data-ng-if="(evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)" name="sup_inclusiveness"
+              id="sup_inclusiveness" class="form-control">
+            <option value="{{selectedEval[0].core_skills.inclusiveness.supervisor_rating}}">
+            {{selectedEval[0].core_skills.inclusiveness.supervisor_rating}}
+            </option>
+            <option value="Exceeds Expectations">Exceeds Expectations</option>
+            <option value="Meets Expectations">Meets Expectations</option>
+            <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+            <option value="N/A">N/A</option>
+          </select>
+            <!-- Don't Show Value -->
+            <select data-ng-disabled="(selectedEval[0].acknowledgements.sup_ack || evalType !== 'supervisor')" data-ng-if="(!(evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack))" name="sup_inclusiveness"
+              id="sup_inclusiveness" class="form-control">
+            <option value="-----">-----</option>
+            <option value="Exceeds Expectations">Exceeds Expectations</option>
+            <option value="Meets Expectations">Meets Expectations</option>
+            <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+            <option value="N/A">N/A</option>
+          </select>
+            <!-- Inclusiveness Supervisor Comment Button -->
+            <button style="margin-top: .5em" data-ng-disabled="(selectedEval[0].acknowledgements.sup_ack || evalType !== 'supervisor')" class="btn btn-info form-control active" data-ng-click="toggleComments('sup_inclusiveness')" data-ng-if="!(show_sup_inclusiveness_comments ||
+              selectedEval[0].core_skills.inclusiveness.supervisor_comment && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack ||
+              selectedEval[0].core_skills.inclusiveness.supervisor_comment && evalType === 'supervisor')">
+            Comment</button>
+            <!-- Inclusiveness Comment Box Supervisor -->
+            <textarea style="margin-top: .5em" data-ng-disabled="(selectedEval[0].acknowledgements.sup_ack || evalType !== 'supervisor')" data-ng-if="show_sup_inclusiveness_comments ||
+              selectedEval[0].core_skills.inclusiveness.supervisor_comment && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack ||
+              selectedEval[0].core_skills.inclusiveness.supervisor_comment && evalType === 'supervisor'
+              " name="sup_inclusiveness_comment" id="sup_inclusiveness_comment" class="form-control">{{selectedEval[0].core_skills.inclusiveness.supervisor_comment}}</textarea>
+          </div>
+        </div>
+        <!-- End Inclusiveness Block-->
+
+        <!-- Innovation Block -->
+        <div class="row" style="background-color: whitesmoke; padding:.5em;">
+          <!-- Innovation Label -->
+          <div class="col-md-2">
+            <h5>Innovation
+            <span
+              class="glyphicon glyphicon-question-sign"
+              data-toggle="popover"
+              data-trigger="hover"
+              data-placement="right"
+              title="Innovation"
+              data-content="Seeks information on best practices. Tries new approaches. Gathers information to assess potential problems and takes advantage of opportunities. Improvises effectively when resources are scarce."></span>
+          </h5>
+          </div>
+          <!-- Innovation Selector Employee -->
+          <div class="col-md-5">
+            <h5 class="visible-sm">Employee Rating</h5>
+            <!-- Show Value-->
+            <select data-ng-disabled="(selectedEval[0].acknowledgements.emp_ack || evalType !== 'employee')" data-ng-if="(evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)" name="emp_innovation" id="emp_innovation"
+              class="form-control">
+              <option value="{{selectedEval[0].core_skills.innovation.employee_rating}}">
+              {{selectedEval[0].core_skills.innovation.employee_rating}}
+              </option>
+              <option value="Exceeds Expectations">Exceeds Expectations</option>
+              <option value="Meets Expectations">Meets Expectations</option>
+              <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+              <option value="N/A">N/A</option>
+            </select>
+            <!-- Don't Show Value -->
+            <select data-ng-disabled="(selectedEval[0].acknowledgements.emp_ack || evalType !== 'employee')" data-ng-if="(!(evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack))" name="emp_innovation" id="emp_innovation"
+              class="form-control">
+              <option value="-----">-----</option>
+              <option value="Exceeds Expectations">Exceeds Expectations</option>
+              <option value="Meets Expectations">Meets Expectations</option>
+              <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+              <option value="N/A">N/A</option>
+            </select>
+            <!-- Innovation Employee Comment Button -->
+            <button style="margin-top: .5em;" data-ng-disabled="(selectedEval[0].acknowledgements.emp_ack || evalType !== 'employee')" class="btn btn-info form-control active" data-ng-click="toggleComments('emp_innovation')" data-ng-if="!(show_emp_innovation_comments ||
+              selectedEval[0].core_skills.innovation.employee_comment && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack ||
+              selectedEval[0].core_skills.innovation.employee_comment && evalType === 'employee')">
+            Comment</button>
+            <!-- Innovation Comment Box Employee -->
+            <textarea style="margin-top: .5em;" data-ng-disabled="(selectedEval[0].acknowledgements.emp_ack || evalType !== 'employee')" data-ng-if="show_emp_innovation_comments ||
+              selectedEval[0].core_skills.innovation.employee_comment && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack ||
+              selectedEval[0].core_skills.innovation.employee_comment && evalType === 'employee'
+              " name="emp_innovation_comment" id="emp_innovation_comment" class="form-control">{{selectedEval[0].core_skills.innovation.employee_comment}}</textarea>
+          </div>
+          <!-- Innovation Selector Supervisor -->
+          <div class="col-md-5">
+            <h5 class="visible-sm">Supervisor Rating</h5>
+            <!-- Show Value-->
+            <select data-ng-disabled="(selectedEval[0].acknowledgements.sup_ack || evalType !== 'supervisor')" data-ng-if="(evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)" name="sup_innovation" id="sup_innovation"
+              class="form-control">
+            <option value="{{selectedEval[0].core_skills.innovation.supervisor_rating}}">
+            {{selectedEval[0].core_skills.innovation.supervisor_rating}}
+            </option>
+            <option value="Exceeds Expectations">Exceeds Expectations</option>
+            <option value="Meets Expectations">Meets Expectations</option>
+            <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+            <option value="N/A">N/A</option>
+          </select>
+            <!-- Don't Show Value -->
+            <select data-ng-disabled="(selectedEval[0].acknowledgements.sup_ack || evalType !== 'supervisor')" data-ng-if="(!(evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack))" name="sup_innovation"
+              id="sup_innovation" class="form-control">
+            <option value="-----">-----</option>
+            <option value="Exceeds Expectations">Exceeds Expectations</option>
+            <option value="Meets Expectations">Meets Expectations</option>
+            <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+            <option value="N/A">N/A</option>
+          </select>
+            <!-- Innovation Supervisor Comment Button -->
+            <button style="margin-top: .5em" data-ng-disabled="(selectedEval[0].acknowledgements.sup_ack || evalType !== 'supervisor')" class="btn btn-info form-control active" data-ng-click="toggleComments('sup_innovation')" data-ng-if="!(show_sup_innovation_comments ||
+              selectedEval[0].core_skills.innovation.supervisor_comment && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack ||
+              selectedEval[0].core_skills.innovation.supervisor_comment && evalType === 'supervisor')">
+            Comment</button>
+            <!-- Innovation Comment Box Supervisor -->
+            <textarea style="margin-top: .5em" data-ng-disabled="(selectedEval[0].acknowledgements.sup_ack || evalType !== 'supervisor')" data-ng-if="show_sup_innovation_comments ||
+              selectedEval[0].core_skills.innovation.supervisor_comment && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack ||
+              selectedEval[0].core_skills.innovation.supervisor_comment && evalType === 'supervisor'
+              " name="sup_innovation_comment" id="sup_innovation_comment" class="form-control">{{selectedEval[0].core_skills.innovation.supervisor_comment}}</textarea>
+          </div>
+        </div>
+        <!-- End Innovation Block-->
+
+        <!-- Advising Block -->
+        <div class="row" style="padding:.5em;">
+          <!-- Advising Label -->
+          <div class="col-md-2">
+            <h5>Advising
+            <span
+              class="glyphicon glyphicon-question-sign"
+              data-toggle="popover"
+              data-trigger="hover"
+              data-placement="right"
+              title="Advising"
+              data-content="Evaluates the appropriateness of students' proposed schedules and course loads. Reviews students' progress toward completion. Determines if students meet pre-requisites and/or eligibility requirements. Advises for proper course sequencing for graduation, etc."></span>
+          </h5>
+          </div>
+          <!-- Advising Selector Employee -->
+          <div class="col-md-5">
+            <h5 class="visible-sm">Employee Rating</h5>
+            <!-- Show Value-->
+            <select data-ng-disabled="(selectedEval[0].acknowledgements.emp_ack || evalType !== 'employee')" data-ng-if="(evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)" name="emp_advising" id="emp_advising"
+              class="form-control">
+              <option value="{{selectedEval[0].core_skills.advising.employee_rating}}">
+              {{selectedEval[0].core_skills.advising.employee_rating}}
+              </option>
+              <option value="Exceeds Expectations">Exceeds Expectations</option>
+              <option value="Meets Expectations">Meets Expectations</option>
+              <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+              <option value="N/A">N/A</option>
+            </select>
+            <!-- Don't Show Value -->
+            <select data-ng-disabled="(selectedEval[0].acknowledgements.emp_ack || evalType !== 'employee')" data-ng-if="(!(evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack))" name="emp_advising" id="emp_advising"
+              class="form-control">
+              <option value="-----">-----</option>
+              <option value="Exceeds Expectations">Exceeds Expectations</option>
+              <option value="Meets Expectations">Meets Expectations</option>
+              <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+              <option value="N/A">N/A</option>
+            </select>
+            <!-- Advising Employee Comment Button -->
+            <button style="margin-top: .5em;" data-ng-disabled="(selectedEval[0].acknowledgements.emp_ack || evalType !== 'employee')" class="btn btn-info form-control active" data-ng-click="toggleComments('emp_advising')" data-ng-if="!(show_emp_advising_comments ||
+              selectedEval[0].core_skills.advising.employee_comment && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack ||
+              selectedEval[0].core_skills.advising.employee_comment && evalType === 'employee')">
+            Comment</button>
+            <!-- Advising Comment Box Employee -->
+            <textarea style="margin-top: .5em;" data-ng-disabled="(selectedEval[0].acknowledgements.emp_ack || evalType !== 'employee')" data-ng-if="show_emp_advising_comments ||
+              selectedEval[0].core_skills.advising.employee_comment && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack ||
+              selectedEval[0].core_skills.advising.employee_comment && evalType === 'employee'
+              " name="emp_advising_comment" id="emp_advising_comment" class="form-control">{{selectedEval[0].core_skills.advising.employee_comment}}</textarea>
+          </div>
+          <!-- Advising Selector Supervisor -->
+          <div class="col-md-5">
+            <h5 class="visible-sm">Supervisor Rating</h5>
+            <!-- Show Value-->
+            <select data-ng-disabled="(selectedEval[0].acknowledgements.sup_ack || evalType !== 'supervisor')" data-ng-if="(evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)" name="sup_advising" id="sup_advising"
+              class="form-control">
+            <option value="{{selectedEval[0].core_skills.advising.supervisor_rating}}">
+            {{selectedEval[0].core_skills.advising.supervisor_rating}}
+            </option>
+            <option value="Exceeds Expectations">Exceeds Expectations</option>
+            <option value="Meets Expectations">Meets Expectations</option>
+            <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+            <option value="N/A">N/A</option>
+          </select>
+            <!-- Don't Show Value -->
+            <select data-ng-disabled="(selectedEval[0].acknowledgements.sup_ack || evalType !== 'supervisor')" data-ng-if="(!(evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack))" name="sup_advising" id="sup_advising"
+              class="form-control">
+            <option value="-----">-----</option>
+            <option value="Exceeds Expectations">Exceeds Expectations</option>
+            <option value="Meets Expectations">Meets Expectations</option>
+            <option value="Unsatisfactory/Needs Improvement">Unsatisfactory/Needs Improvement</option>
+            <option value="N/A">N/A</option>
+          </select>
+            <!-- Advising Supervisor Comment Button -->
+            <button style="margin-top: .5em" data-ng-disabled="(selectedEval[0].acknowledgements.sup_ack || evalType !== 'supervisor')" class="btn btn-info form-control active" data-ng-click="toggleComments('sup_advising')" data-ng-if="!(show_sup_advising_comments ||
+              selectedEval[0].core_skills.advising.supervisor_comment && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack ||
+              selectedEval[0].core_skills.advising.supervisor_comment && evalType === 'supervisor')">
+            Comment</button>
+            <!-- Advising Comment Box Supervisor -->
+            <textarea style="margin-top: .5em" data-ng-disabled="(selectedEval[0].acknowledgements.sup_ack || evalType !== 'supervisor')" data-ng-if="show_sup_advising_comments ||
+              selectedEval[0].core_skills.advising.supervisor_comment && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack ||
+              selectedEval[0].core_skills.advising.supervisor_comment && evalType === 'supervisor'
+              " name="sup_advising_comment" id="sup_advising_comment" class="form-control">{{selectedEval[0].core_skills.advising.supervisor_comment}}</textarea>
+          </div>
+        </div>
+        <!-- End Advising Block-->
+
+      </div>
+    </div>
+    <!-- End Skills Panel V2 -->
+
+    <!-- Objectives -->
+    <div class="panel panel-default" data-ng-show="!printable">
+      <div class="panel-heading">Objectives
+        <span class="pull-right">
+          <span class="glyphicon glyphicon-chevron-up"
+          data-ng-click="collapse('objectives')"
+          data-ng-show="(objectives_collapse !== 'collapse')">
+          </span>
+        <span class="glyphicon glyphicon-chevron-down" data-ng-click="expand('objectives')" data-ng-hide="(objectives_collapse !== 'collapse')">
+          </span>
+        </span>
+      </div>
+      <div data-ng-class="objectives_collapse" class="panel-body">
+
+        <div class="form-group col-md-6">
+          <label for="objective" class="control-label">Objective</label>
+          <textarea class="form-control" rows="3" name="objective" id="objective" data-ng-disabled="!objEditMode">{{selectedEval[0].objectives[objective_page].objective}}</textarea>
+        </div>
+        <div class="form-group col-md-6">
+          <label for="goals" class="control-label">Related Goals</label>
+          <textarea class="form-control" rows="3" name="goals" id="goals" data-ng-disabled="!objEditMode">{{selectedEval[0].objectives[objective_page].goals}}</textarea>
+        </div>
+
+        <div class="form-group col-md-6">
+          <label for="progress" class="control-label">Mid-Year Progress</label>
+          <textarea class="form-control" rows="3" name="progress" id="progress" data-ng-disabled="!objEditMode">{{selectedEval[0].objectives[objective_page].progress}}</textarea>
+        </div>
+
+        <div class="form-group col-md-6">
+          <label for="results" class="control-label">End-Of-Year Results</label>
+          <textarea class="form-control" rows="3" name="results" id="results" data-ng-disabled="!objEditMode">{{selectedEval[0].objectives[objective_page].results}}</textarea>
+        </div>
+
+        <div class="col-md-4 col-md-offset-4">
+          <div class="btn-group btn-group-justified">
+            <a class="btn btn-success" data-toggle="modal" data-target="#addObjective" data-ng-show="!selectedEval[0].acknowledgements.verify_date">Add</a>
+            <div id="addObjective" class="modal">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Add Objective</h4>
+                  </div>
+                  <div class="modal-body">
+                    <div class="form-group col-md-6">
+                      <label for="_objective" class="control-label">Objective</label>
+                      <textarea class="form-control" rows="3" name="add_objective" data-ng-model="add_objective"></textarea>
+                    </div>
+                    <div class="form-group col-md-6">
+                      <label for="_goals" class="control-label">Related Goals</label>
+                      <textarea class="form-control" rows="3" name="add_goals" data-ng-model="add_goals"></textarea>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-warning" data-ng-click="clr_obj()" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success" data-ng-click="add_obj(selectedEval[0]._id)" data-dismiss="modal">Add</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <a data-ng-show="!objEditMode && !selectedEval[0].objectives.length < 1 && !selectedEval[0].acknowledgements.verify_date" data-ng-click="edit_obj()" class="btn btn-warning">Edit</a>
+            <a data-ng-show="objEditMode" data-ng-click="update_obj(selectedEval[0]._id,selectedEval[0].objectives[objective_page]._id)" class="btn btn-warning">Update</a>
+            <a data-ng-show="!selectedEval[0].objectives.length < 1 && !selectedEval[0].acknowledgements.verify_date" class="btn btn-danger" data-toggle="modal" data-target="#deleteObjective">Delete</a>
+            <div id="deleteObjective" class="modal">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Delete Objective?</h4>
+                  </div>
+                  <div class="modal-body">
+                    <h6>{{selectedEval[0].objectives[objective_page].objective}}</h6>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" data-ng-click="delete_obj(selectedEval[0]._id,selectedEval[0].objectives[objective_page]._id)" data-dismiss="modal">Delete</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-12 text-center">
+          <ul class="pagination pagination-lg">
+            <li data-ng-class="{'active': (objective_page === $index)}" data-ng-repeat="objective in selectedEval[0].objectives">
+              <a data-ng-click="obj_page($index)">
+                  {{$index + 1}}
+                </a>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+    <!-- End Objectives -->
+
+    <!-- Professional Development -->
+    <div class="panel panel-default" data-ng-show="!printable">
+      <div class="panel-heading">Professional Development
+        <span class="pull-right">
+          <span class="glyphicon glyphicon-chevron-up"
+          data-ng-click="collapse('training')"
+          data-ng-show="(training_collapse !== 'collapse')">
+          </span>
+        <span class="glyphicon glyphicon-chevron-down" data-ng-click="expand('training')" data-ng-hide="(training_collapse !== 'collapse')">
+          </span>
+        </span>
+      </div>
+      <div data-ng-class="training_collapse" class="panel-body">
+        <div class="col-md-12">
+          <div class="form-group col-md-6">
+            <label for="reviewed" class="control-label">Required License/Certification/Credential</label>
+            <div class="input-group">
+              <span class="input-group-addon">
+                <select id="certificate_license"
+                data-ng-disabled="(evalType === 'employee' && selectedEval[0].acknowledgements.emp_ack) || (evalType === 'supervisor' && selectedEval[0].acknowledgements.sup_ack) || evalType === 'next_level'">
+                  <option value="{{selectedEval[0].professional_development.certificate_license}}">{{selectedEval[0].professional_development.certificate_license}}</option>
+                  <option value="N/A">N/A</option>
+                  <option value="Doesn't Have">Doesn't Have</option>
+                  <option value="Up to Date">Up to Date</option>
+                </select>
+              </span>
+              <input class="datepicker form-control" type="text" id="cert_lic_date" placeholder="Expires" value="{{selectedEval[0].professional_development.cert_lic_date | date: 'shortDate'}}" data-ng-disabled="(evalType === 'employee' && selectedEval[0].acknowledgements.emp_ack) || (evalType === 'supervisor' && selectedEval[0].acknowledgements.sup_ack) || evalType === 'next_level'">
+              <span class="input-group-addon">
+                <span class="glyphicon glyphicon-calendar"></span>
+              </span>
+            </div>
+          </div>
+
+          <div class="form-group col-md-6">
+            <label for="reviewed" class="control-label">Supplemental License/Certification/Credential</label>
+            <div class="input-group">
+              <input class="datepicker form-control" type="text" id="additional_date" placeholder="Expires" value="{{selectedEval[0].professional_development.additional_date | date: 'shortDate'}}" data-ng-disabled="(evalType === 'employee' && selectedEval[0].acknowledgements.emp_ack) || (evalType === 'supervisor' && selectedEval[0].acknowledgements.sup_ack) || evalType === 'next_level'">
+              <span class="input-group-addon">
+                <span class="glyphicon glyphicon-calendar"></span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-12" style="border-bottom: 1px solid silver; padding: 1em;">
+        </div>
+        <div class="col-md-12" style="padding: 1em;">
+        </div>
+
+        <div class="col-md-6">
+          <div class="form-group col-md-12">
+            <label for="prof_dev_activity" class="control-label">Professional Development Activities</label>
+            <input class="form-control" type="text" name="prof_dev_activity" value="{{selectedEval[0].prof_dev_activities[training_page].activity}}" placeholder="Activity" data-ng-disabled="!trainingEditMode" />
+          </div>
+
+          <div class="form-group col-md-12">
+            <label for="prof_dev_time" class="control-label">Hours</label>
+            <input class="form-control" type="text" name="prof_dev_time" value="{{selectedEval[0].prof_dev_activities[training_page].hours}}" placeholder="Time" data-ng-disabled="!trainingEditMode" />
+          </div>
+        </div>
+        <div class="form-group col-md-6">
+          <label for="prof_dev_comments" class="control-label">Comments</label>
+          <textarea class="form-control" rows="4" name="prof_dev_comments" placeholder="Comments" data-ng-disabled="!trainingEditMode">{{selectedEval[0].prof_dev_activities[training_page].comments}}</textarea>
+        </div>
+
+        <div class="col-md-4 col-md-offset-4">
+          <div class="btn-group btn-group-justified">
+            <a class="btn btn-success" data-toggle="modal" data-target="#addTraining" data-ng-show="!selectedEval[0].acknowledgements.verify_date">Add</a>
+            <div id="addTraining" class="modal">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Add Activity</h4>
+                  </div>
+                  <div class="modal-body">
+                    <div class="form-group col-md-3">
+                      <label for="_objective" class="control-label">Activity</label>
+                      <textarea class="form-control" rows="3" name="add_prof_dev_activity"></textarea>
+                    </div>
+                    <div class="form-group col-md-3">
+                      <label for="_objective" class="control-label">Hours</label>
+                      <textarea class="form-control" rows="3" name="add_prof_dev_time"></textarea>
+                    </div>
+                    <div class="form-group col-md-6">
+                      <label for="_goals" class="control-label">Comments</label>
+                      <textarea class="form-control" rows="3" name="add_prof_dev_comments"></textarea>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-warning" data-ng-click="clr_train()" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success" data-ng-click="add_train(selectedEval[0]._id)" data-dismiss="modal">Add</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <a data-ng-show="!trainingEditMode && selectedEval[0].prof_dev_activities.length > 0 && !selectedEval[0].acknowledgements.verify_date" data-ng-click="edit_train()" class="btn btn-warning">Edit</a>
+            <a data-ng-show="trainingEditMode" data-ng-click="update_train(selectedEval[0]._id,selectedEval[0].prof_dev_activities[training_page]._id)" class="btn btn-warning">Update</a>
+            <a data-ng-show="!selectedEval[0].prof_dev_activities.length < 1 && !selectedEval[0].acknowledgements.verify_date" class="btn btn-danger" data-toggle="modal" data-target="#deleteTraining">Delete</a>
+            <div id="deleteTraining" class="modal">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Delete Training</h4>
+                  </div>
+                  <div class="modal-body">
+                    <h6>{{selectedEval[0].prof_dev_activities[training_page].activity}}</h6>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" data-ng-click="delete_train(selectedEval[0]._id,selectedEval[0].prof_dev_activities[training_page]._id)" data-dismiss="modal">Delete</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-12 text-center">
+          <ul class="pagination pagination-lg">
+            <li data-ng-class="{'active': (training_page === $index)}" data-ng-repeat="training in selectedEval[0].prof_dev_activities">
+              <a data-ng-click="train_page($index)">
+                  {{$index + 1}}
+                </a>
+            </li>
+          </ul>
+        </div>
+
+
+      </div>
+    </div>
+    <!-- End Professional Development -->
+
+    <div class="panel panel-default">
+      <div class="panel-heading">Acknowledgement
+        <span class="pull-right">
+          <span class="glyphicon glyphicon-chevron-up"
+          data-ng-click="collapse('acknowledgements')"
+          data-ng-show="(acknowledgements_collapse !== 'collapse')">
+          </span>
+        <span class="glyphicon glyphicon-chevron-down" data-ng-click="expand('acknowledgements')" data-ng-hide="(acknowledgements_collapse !== 'collapse')">
+          </span>
+        </span>
+      </div>
+      <div data-ng-class="acknowledgements_collapse" class="panel-body">
+        <p>It is important to note that acknowledgement will lock your ratings in place and you will no longer be able to make changes to this evaluation. Acknowledgement or verification do not denote agreement with the contents of this evaluation.</p>
+        <div class="form-group col-md-6">
+          <label for="name" class="control-label">Employee Comments</label>
+          <textarea class="form-control" rows="3" id="emp_comment" placeholder="Employee Comments" data-ng-if="(evalType ==='employee' || (selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack))" data-ng-disabled="(evalType !=='employee' || selectedEval[0].acknowledgements.emp_ack)">{{selectedEval[0].acknowledgements.emp_comment}}</textarea>
+          <textarea class="form-control" rows="3" id="emp_comment" placeholder="Employee Comments" data-ng-if="(evalType !=='employee' && !(selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack))" data-ng-disabled="(evalType !=='employee' || selectedEval[0].acknowledgements.emp_ack)">---------</textarea>
+        </div>
+        <div class="form-group col-md-6">
+          <div class="col-md-8">
+            <p style="font-weight: bold;">Employee acknowledges self evaluation is complete and ready for verification meeting:</p>
+          </div>
+          <div class="col-md-4">
+            <button class="btn btn-sm btn-danger" data-ng-hide="emp_date" data-ng-click="set_slider('emp_date')" data-ng-disabled="evalType !== 'employee' || selectedEval[0].acknowledgements.emp_ack">
+              <strong>No</strong></button>
+            <button class="btn btn-sm btn-success" data-ng-show="emp_date" data-ng-click="set_slider('emp_date')" data-ng-disabled="evalType !== 'employee' || selectedEval[0].acknowledgements.emp_ack">
+              <strong>Yes</strong></button>
+            <input type="hidden" data-ng-model="emp_date" disabled>
+          </div>
+        </div>
+
+        <div class="col-md-12" style="border-bottom: 1px solid silver; padding: 1em;">
+        </div>
+        <div class="col-md-12" style="padding: 1em;">
+        </div>
+
+        <div class="form-group col-md-6">
+          <label for="name" class="control-label">Supervisor Comments</label>
+          <textarea class="form-control" rows="3" id="sup_comment" placeholder="Supervisor Comments" data-ng-if="(evalType ==='supervisor' || (selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack))" data-ng-disabled="(evalType !=='supervisor' || selectedEval[0].acknowledgements.sup_ack)">{{selectedEval[0].acknowledgements.sup_comment}}</textarea>
+          <textarea class="form-control" rows="3" id="sup_comment" placeholder="Supervisor Comments" data-ng-if="(evalType !=='supervisor' && !(selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack))" data-ng-disabled="(evalType !=='supervisor' || selectedEval[0].acknowledgements.sup_ack)">
+              ---------
+            </textarea>
+        </div>
+        <div class="form-group col-md-6">
+          <div class="col-md-8">
+            <p style="font-weight: bold;">Supervisor acknowledges employee evaluation is complete and ready for verification meeting:
+              <span class="glyphicon glyphicon-question-sign text-danger" data-toggle="popover" data-trigger="hover" data-placement="top" title="Restricted" data-content="You may not finalize this form without first revieweing and updating the job description above."></span>
+            </p>
+          </div>
+          <div class="col-md-4">
+            <button class="btn btn-sm btn-danger" data-ng-hide="sup_date" data-ng-click="set_slider('sup_date')" data-ng-disabled="evalType !== 'supervisor' || selectedEval[0].acknowledgements.sup_ack || !reviewed_date || !updated_date">
+              <strong>No</strong></button>
+            <button class="btn btn-sm btn-success" data-ng-show="sup_date" data-ng-click="set_slider('sup_date')" data-ng-disabled="evalType !== 'supervisor' || selectedEval[0].acknowledgements.sup_ack || !reviewed_date || !updated_date">
+              <strong>Yes</strong></button>
+            <input type="hidden" data-ng-model="sup_date" disabled>
+          </div>
+        </div>
+        <div class="col-md-12" data-ng-show="selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack && evalType !== 'employee'">
+          <div class="col-md-12" style="border-bottom: 1px solid silver; padding: 1em;">
+          </div>
+          <div class="col-md-12" style="padding: 1em;">
+          </div>
+          <div class="col-md-12" data-ng-show="selectedEval[0].acknowledgements.pip_needed === true">
+            <div class="form-group col-md-11">
+              <label for="pip_steps" class="control-label">Performance Improvement Plan</label>
+              <textarea class="form-control" rows="3" id="pip_steps" data-ng-disabled="evalType !== 'supervisor' || selectedEval[0].acknowledgements.verify_date">{{selectedEval[0].performance_improvement_plan.pip_steps}}</textarea>
+            </div>
+            <div class="col-md-1" data-ng-hide="selectedEval[0].acknowledgements.verify_date">
+              <button class="btn btn-success" data-ng-click="savepip()">Save</button>
+            </div>
+          </div>
+          <div class="col-md-12" style="border-bottom: 1px solid silver; padding: 1em;">
+          </div>
+          <div class="col-md-12" style="padding: 1em;">
+          </div>
+          <div class="col-md-12 alert alert-danger" data-ng-if="!(!selectedEval[0].acknowledgements.pip_needed || selectedEval[0].acknowledgements.pip_needed && selectedEval[0].performance_improvement_plan.pip_steps)">
+            <h4 class="text-center">Performance improvement plan must be completed and saved before the meeting and meeting verification can occur.</h4>
+          </div>
+
+          <div class="col-md-12" data-ng-if="!selectedEval[0].acknowledgements.pip_needed || selectedEval[0].acknowledgements.pip_needed && selectedEval[0].performance_improvement_plan.pip_steps">
+            <div class="col-md-6">
+              <input class="form-control" name="verify_date" type="text" hidden="hidden" data-ng-model="verify_date" data-ng-hide="true" data-ng-value="selectedEval[0].acknowledgements.final_meeting | date: 'shortDate'">
+              <h4>Verification(Employee)</h4>
+              <p>Sign in below to verify meeting with your supervisor about the above performance evaluation.</p>
+              <div class="form-group col-md-12">
+                <label for="emp_meeting_comments" class="control-label">Employee Meeting Comments</label>
+                <textarea class="form-control" rows="3" name="emp_meeting_comments" placeholder="Employee meeting comments" data-ng-disabled="selectedEval[0].acknowledgements.verify_date || emp_verify">{{selectedEval[0].acknowledgements.emp_meeting_comments}}</textarea>
+              </div>
+              <div data-ng-hide="selectedEval[0].acknowledgements.verify_date || emp_verify">
+                <div class="form-group col-md-4">
+                  <input class="form-control" data-ng-model="verify_emp_user" placeholder="Username" type="text">
+                </div>
+                <div class="form-group col-md-4">
+                  <input class="form-control" data-ng-model="verify_emp_pass" placeholder="Password" type="password" data-ng-keydown="keydownVerify($event, verify_emp_user, verify_emp_pass, 'emp', selectedEval[0].username)">
+                </div>
+                <div class="form-group col-md-4">
+                  <button type="button" data-ng-click="verify(verify_emp_user, verify_emp_pass, 'emp', selectedEval[0].username)" class="form-control btn btn-primary">Verify</button>
+                </div>
+              </div>
+              <h2 class="text-success" data-ng-show="selectedEval[0].acknowledgements.verify_date || emp_verify">Verified!</h2>
+            </div>
+
+            <div class="col-md-6">
+              <h4>Verification(Supervisor)</h4>
+              <p>Sign in below to verify meeting with your employee about the above performance evaluation.</p>
+              <div class="form-group col-md-12">
+                <label for="sup_meeting_comments" class="control-label">Supervisor Meeting Comments</label>
+                <textarea class="form-control" rows="3" name="sup_meeting_comments" placeholder="Supervisor meeting comments" data-ng-disabled="selectedEval[0].acknowledgements.verify_date || sup_verify">{{selectedEval[0].acknowledgements.sup_meeting_comments}}</textarea>
+              </div>
+              <div data-ng-hide="selectedEval[0].acknowledgements.verify_date || sup_verify">
+                <div class="form-group col-md-4">
+                  <input class="form-control" name="verify_sup_user" data-ng-model="verify_sup_user" placeholder="Username" type="text">
+                </div>
+                <div class="form-group col-md-4">
+                  <input class="form-control" name="verify_sup_pass" data-ng-model="verify_sup_pass" placeholder="Password" type="password" data-ng-keydown="keydownVerify($event, verify_sup_user, verify_sup_pass, 'sup', selectedEval[0].supervisor)">
+                </div>
+                <div class="form-group col-md-4">
+                  <button type="button" data-ng-click="verify(verify_sup_user, verify_sup_pass, 'sup', selectedEval[0].supervisor)" class="form-control btn btn-primary">Verify</button>
+                </div>
+              </div>
+              <h2 class="text-success" data-ng-show="selectedEval[0].acknowledgements.verify_date || sup_verify">Verified!</h2>
+            </div>
+          </div>
+        </div>
+        <div id="verify_error" class="modal">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Error</h4>
+              </div>
+              <div class="modal-body">
+                <h6>{{verify_error_message}}</h6>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Okay</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="save" class="modal">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Save Evaluation</h4>
+              </div>
+              <div class="modal-body">
+                <h6>Your information has been saved.</h6>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Thanks!</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+        <div class="form-group col-md-12" data-ng-show="evalType === 'next_level'">
+          <div class="col-md-12" style="border-bottom: 1px solid silver; padding: 1em;">
+          </div>
+          <div class="col-md-12" style="padding: 1em;">
+          </div>
+          <div class="form-group col-md-6">
+            <label for="name" class="control-label">Reviewer Comments</label>
+            <textarea class="form-control" rows="3" name="nl_comment" placeholder="Next-Level Comments" data-ng-disabled="evalType !== 'next_level' || selectedEval[0].acknowledgements.nl_ack === true">{{selectedEval[0].acknowledgements.nl_comment}}</textarea>
+          </div>
+          <div class="form-group col-md-6" data-ng-show="evalType === 'next_level'">
+            <div class="col-md-8">
+              <p style="font-weight: bold;">Reviewer acknowledges employee evaluation is complete:</p>
+            </div>
+            <div class="col-md-1">
+              <h6>No</h6></div>
+            <div class="col-md-2">
+              <label class="switch">
+                  <input type="checkbox" data-ng-click="set_slider('nl_date')"
+                    data-ng-checked="nl_date"
+                    data-ng-disabled="evalType !== 'next_level' || selectedEval[0].acknowledgements.nl_ack === true">
+                  <span class="slider round"></span>
+                </label>
+              <input type="hidden" data-ng-model="nl_date" />
+            </div>
+            <div class="col-md-1">
+              <h6>Yes</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Modals -->
+    <div id="finalize_error" class="modal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title">Error</h4>
+          </div>
+          <div class="modal-body">
+            <h6>You must select a rating for each category under skills before finalizing.</h6>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Okay</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="finalize" class="modal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title">Finalize Evaluation</h4>
+          </div>
+          <div class="modal-body">
+            <h6>Please Note: You will not be able to make any further changes to this evaluation once it has been finalized!</h6>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-danger" data-ng-click="saveForm(evalType, true)" data-dismiss="modal">Finalize</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="follow" data-ng-show="(loggedIn && ((evalType === 'employee' && !selectedEval[0].acknowledgements.emp_date) || (evalType === 'supervisor' && !selectedEval[0].acknowledgements.sup_date) || (evalType ==='next_level' && !selectedEval[0].acknowledgements.nl_date)))">
+      <button class="btn btn-success" data-ng-show="(evalType === 'employee' && !emp_date) || (evalType === 'supervisor' && !sup_date) || (evalType === 'next_level' && !nl_date)" data-ng-click="saveForm(evalType, false)">
+        Save <span class="glyphicon glyphicon-floppy-save"></span>
+      </button>
+
+      <a class="btn btn-danger" data-toggle="modal" data-target="#finalize" data-ng-show="(evalType === 'employee'  && emp_date) || (evalType === 'supervisor' && sup_date) || (evalType === 'next_level' && nl_date)">
+        Finalize <span class="glyphicon glyphicon-floppy-save"></a>
+
+    </div>
+
+    <div class="footer navbar">
+      <div class="col-md-12" style="background-color: white; border-top: 1px solid silver; margin-top: 1em;">
+        <div class="col-md-2">
+          <img src="images/RCC_logo_devops.png" alt="RCC Developer Operations" width="125" height="102" />
+        </div>
+        <div class="col-md-2">
+          <h4>Phone</h4>
+          <p>(910) 410-1822</p>
+        </div>
+        <div class="col-md-2">
+          <h4>Email</h4>
+          <p>ragaddy@richmondcc.edu</p>
+        </div>
+        <div class="col-md-2">
+          <h4>Chat</h4>
+          <p>(Currently Offline)</p>
+        </div>
+        <div class="col-md-2">
+          <h4>Report Bug</h4>
+          <p>(Currently Offline)</p>
+        </div>
+      </div>
+    </div>
+</form>

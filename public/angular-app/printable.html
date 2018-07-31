@@ -1,0 +1,410 @@
+<table style="width: 90%; margin-left: auto; margin-right: auto;">
+  <tr>
+    <td colspan="3"><h2>Performance Evaluation</h2></td>
+    <td colspan="3">
+      <button class="btn btn-success form-control noPrint" data-ng-click="main_panel()">
+        Back <span class="glyphicon glyphicon-circle-arrow-left"></span>
+      </button>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="4"><h3>Employee</h3></td>
+  </tr>
+  <tr>
+    <td>
+      <dl>
+        <dt style="font-weight: bold">Name</dt>
+        <dd>{{selectedEval[0].name}}</dd>
+      </dl>
+    </td>
+    <td>
+      <dl>
+        <dt style="font-weight: bold">Title</dt>
+        <dd>{{selectedEval[0].title}}</dd>
+      </dl>
+    </td>
+    <td>
+      <dl>
+        <dt style="font-weight: bold">Division</dt>
+        <dd>{{selectedEval[0].division}}</dd>
+      </dl>
+    </td>
+    <td>
+      <dl>
+        <dt style="font-weight: bold">Department</dt>
+        <dd>{{selectedEval[0].department}}</dd>
+      </dl>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="4"><h3>Skills</h3></td>
+  </tr>
+  <!-- Duties [begin] -->
+  <tr style="background-color: whitesmoke;">
+    <td colspan="4"><h4>Duties</h4></td>
+  </tr>
+  <tr style="background-color: whitesmoke;">
+    <td colspan="2">
+      <dl>
+        <dt style="font-weight: bold">Employee Rating</dt>
+        <dd data-ng-if="(evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)">
+          {{selectedEval[0].core_skills.duties.employee_rating}}</dd>
+        <dt style="font-weight: bold">Employee Comment</dt>
+        <dd data-ng-if="(evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)">
+          {{selectedEval[0].core_skills.duties.employee_comment}}</dd>
+      </dl>
+    </td>
+    <td colspan="2">
+      <dl>
+        <dt style="font-weight: bold">Supervisor Rating</dt>
+        <dd data-ng-if="(evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)">
+          {{selectedEval[0].core_skills.duties.supervisor_rating}}</dd>
+        <dt style="font-weight: bold">Supervisor Comment</dt>
+        <dd data-ng-if="(evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)">
+          {{selectedEval[0].core_skills.duties.supervisor_comment}}</dd>
+      </dl>
+    </td>
+  </tr>
+  <!-- Duties [end] -->
+  <!-- Teamwork [begin] -->
+  <tr>
+    <td colspan="4"><h4>Teamwork</h4></td>
+  </tr>
+  <tr>
+    <td colspan="2">
+      <dl>
+        <dt style="font-weight: bold">Employee Rating</dt>
+        <dd data-ng-if="(evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)">
+          {{selectedEval[0].core_skills.teamwork.employee_rating}}</dd>
+        <dt style="font-weight: bold">Employee Comment</dt>
+        <dd data-ng-if="(evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)">
+          {{selectedEval[0].core_skills.teamwork.employee_comment}}</dd>
+      </dl>
+    </td>
+    <td colspan="2">
+      <dl>
+        <dt style="font-weight: bold">Supervisor Rating</dt>
+        <dd data-ng-if="(evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)">
+          {{selectedEval[0].core_skills.teamwork.supervisor_rating}}</dd>
+        <dt style="font-weight: bold">Supervisor Comment</dt>
+        <dd data-ng-if="(evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)">
+          {{selectedEval[0].core_skills.teamwork.supervisor_comment}}</dd>
+      </dl>
+    </td>
+  </tr>
+  <!-- Teamwork [end] -->
+  <!-- Dependability [begin] -->
+  <tr style="background-color: whitesmoke;">
+    <td colspan="4"><h4>Dependability</h4></td>
+  </tr>
+  <tr style="background-color: whitesmoke;">
+    <td colspan="2">
+      <dl>
+        <dt style="font-weight: bold">Employee Rating</dt>
+        <dd data-ng-if="(evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)">
+          {{selectedEval[0].core_skills.dependability.employee_rating}}</dd>
+        <dt style="font-weight: bold">Employee Comment</dt>
+        <dd data-ng-if="(evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)">
+          {{selectedEval[0].core_skills.dependability.employee_comment}}</dd>
+      </dl>
+    </td>
+    <td colspan="2">
+      <dl>
+        <dt style="font-weight: bold">Supervisor Rating</dt>
+        <dd data-ng-if="(evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)">
+          {{selectedEval[0].core_skills.dependability.supervisor_rating}}</dd>
+        <dt style="font-weight: bold">Supervisor Comment</dt>
+        <dd data-ng-if="(evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)">
+          {{selectedEval[0].core_skills.dependability.supervisor_comment}}</dd>
+      </dl>
+    </td>
+  </tr>
+  <!-- Dependability [end] -->
+  <!-- Judgement [begin] -->
+  <tr>
+    <td colspan="4"><h4>Judgement</h4></td>
+  </tr>
+  <tr>
+    <td colspan="2">
+      <dl>
+        <dt style="font-weight: bold">Employee Rating</dt>
+        <dd data-ng-if="(evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)">
+          {{selectedEval[0].core_skills.judgement.employee_rating}}</dd>
+        <dt style="font-weight: bold">Employee Comment</dt>
+        <dd data-ng-if="(evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)">
+          {{selectedEval[0].core_skills.judgement.employee_comment}}</dd>
+      </dl>
+    </td>
+    <td colspan="2">
+      <dl>
+        <dt style="font-weight: bold">Supervisor Rating</dt>
+        <dd data-ng-if="(evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)">
+          {{selectedEval[0].core_skills.judgement.supervisor_rating}}</dd>
+        <dt style="font-weight: bold">Supervisor Comment</dt>
+        <dd data-ng-if="(evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)">
+          {{selectedEval[0].core_skills.judgement.supervisor_comment}}</dd>
+      </dl>
+    </td>
+  </tr>
+  <!-- Judgement [end] -->
+  <!-- Ethics [begin] -->
+  <tr style="background-color: whitesmoke;">
+    <td colspan="4"><h4>Ethics</h4></td>
+  </tr>
+  <tr style="background-color: whitesmoke;">
+    <td colspan="2">
+      <dl>
+        <dt style="font-weight: bold">Employee Rating</dt>
+        <dd data-ng-if="(evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)">
+          {{selectedEval[0].core_skills.ethics.employee_rating}}</dd>
+        <dt style="font-weight: bold">Employee Comment</dt>
+        <dd data-ng-if="(evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)">
+          {{selectedEval[0].core_skills.ethics.employee_comment}}</dd>
+      </dl>
+    </td>
+    <td colspan="2">
+      <dl>
+        <dt style="font-weight: bold">Supervisor Rating</dt>
+        <dd data-ng-if="(evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)">
+          {{selectedEval[0].core_skills.ethics.supervisor_rating}}</dd>
+        <dt style="font-weight: bold">Supervisor Comment</dt>
+        <dd data-ng-if="(evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)">
+          {{selectedEval[0].core_skills.ethics.supervisor_comment}}</dd>
+      </dl>
+    </td>
+  </tr>
+  <!-- Ethics [end] -->
+  <!-- Adaptability [begin] -->
+  <tr>
+    <td colspan="4"><h4>Adaptability</h4></td>
+  </tr>
+  <tr>
+    <td colspan="2">
+      <dl>
+        <dt style="font-weight: bold">Employee Rating</dt>
+        <dd data-ng-if="(evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)">
+          {{selectedEval[0].core_skills.adaptability.employee_rating}}</dd>
+        <dt style="font-weight: bold">Employee Comment</dt>
+        <dd data-ng-if="(evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)">
+          {{selectedEval[0].core_skills.adaptability.employee_comment}}</dd>
+      </dl>
+    </td>
+    <td colspan="2">
+      <dl>
+        <dt style="font-weight: bold">Supervisor Rating</dt>
+        <dd data-ng-if="(evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)">
+          {{selectedEval[0].core_skills.adaptability.supervisor_rating}}</dd>
+        <dt style="font-weight: bold">Supervisor Comment</dt>
+        <dd data-ng-if="(evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)">
+          {{selectedEval[0].core_skills.adaptability.supervisor_comment}}</dd>
+      </dl>
+    </td>
+  </tr>
+  <!-- Adaptability [end] -->
+  <!-- Communication [begin] -->
+  <tr style="background-color: whitesmoke;">
+    <td colspan="4"><h4>Communication</h4></td>
+  </tr>
+  <tr style="background-color: whitesmoke;">
+    <td colspan="2">
+      <dl>
+        <dt style="font-weight: bold">Employee Rating</dt>
+        <dd data-ng-if="(evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)">
+          {{selectedEval[0].core_skills.communication.employee_rating}}</dd>
+        <dt style="font-weight: bold">Employee Comment</dt>
+        <dd data-ng-if="(evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)">
+          {{selectedEval[0].core_skills.communication.employee_comment}}</dd>
+      </dl>
+    </td>
+    <td colspan="2">
+      <dl>
+        <dt style="font-weight: bold">Supervisor Rating</dt>
+        <dd data-ng-if="(evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)">
+          {{selectedEval[0].core_skills.communication.supervisor_rating}}</dd>
+        <dt style="font-weight: bold">Supervisor Comment</dt>
+        <dd data-ng-if="(evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)">
+          {{selectedEval[0].core_skills.communication.supervisor_comment}}</dd>
+      </dl>
+    </td>
+  </tr>
+  <!-- Communication [end] -->
+  <!-- Inclusiveness [begin] -->
+  <tr>
+    <td colspan="4"><h4>Inclusiveness</h4></td>
+  </tr>
+  <tr>
+    <td colspan="2">
+      <dl>
+        <dt style="font-weight: bold">Employee Rating</dt>
+        <dd data-ng-if="(evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)">
+          {{selectedEval[0].core_skills.inclusiveness.employee_rating}}</dd>
+        <dt style="font-weight: bold">Employee Comment</dt>
+        <dd data-ng-if="(evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)">
+          {{selectedEval[0].core_skills.inclusiveness.employee_comment}}</dd>
+      </dl>
+    </td>
+    <td colspan="2">
+      <dl>
+        <dt style="font-weight: bold">Supervisor Rating</dt>
+        <dd data-ng-if="(evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)">
+          {{selectedEval[0].core_skills.inclusiveness.supervisor_rating}}</dd>
+        <dt style="font-weight: bold">Supervisor Comment</dt>
+        <dd data-ng-if="(evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)">
+          {{selectedEval[0].core_skills.inclusiveness.supervisor_comment}}</dd>
+      </dl>
+    </td>
+  </tr>
+  <!-- Inclusiveness [end] -->
+  <!-- Innovation [begin] -->
+  <tr style="background-color: whitesmoke;">
+    <td colspan="4"><h4>Innovation</h4></td>
+  </tr>
+  <tr style="background-color: whitesmoke;">
+    <td colspan="2">
+      <dl>
+        <dt style="font-weight: bold">Employee Rating</dt>
+        <dd data-ng-if="(evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)">
+          {{selectedEval[0].core_skills.innovation.employee_rating}}</dd>
+        <dt style="font-weight: bold">Employee Comment</dt>
+        <dd data-ng-if="(evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)">
+          {{selectedEval[0].core_skills.innovation.employee_comment}}</dd>
+      </dl>
+    </td>
+    <td colspan="2">
+      <dl>
+        <dt style="font-weight: bold">Supervisor Rating</dt>
+        <dd data-ng-if="(evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)">
+          {{selectedEval[0].core_skills.innovation.supervisor_rating}}</dd>
+        <dt style="font-weight: bold">Supervisor Comment</dt>
+        <dd data-ng-if="(evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)">
+          {{selectedEval[0].core_skills.innovation.supervisor_comment}}</dd>
+      </dl>
+    </td>
+  </tr>
+  <!-- Innovation [end] -->
+  <!-- Advising [begin] -->
+  <tr>
+    <td colspan="4"><h4>Advising</h4></td>
+  </tr>
+  <tr>
+    <td colspan="2">
+      <dl>
+        <dt style="font-weight: bold">Employee Rating</dt>
+        <dd data-ng-if="(evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)">
+          {{selectedEval[0].core_skills.advising.employee_rating}}</dd>
+        <dt style="font-weight: bold">Employee Comment</dt>
+        <dd data-ng-if="(evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)">
+          {{selectedEval[0].core_skills.advising.employee_comment}}</dd>
+      </dl>
+    </td>
+    <td colspan="2">
+      <dl>
+        <dt style="font-weight: bold">Supervisor Rating</dt>
+        <dd data-ng-if="(evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)">
+          {{selectedEval[0].core_skills.advising.supervisor_rating}}</dd>
+        <dt style="font-weight: bold">Supervisor Comment</dt>
+        <dd data-ng-if="(evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack)">
+          {{selectedEval[0].core_skills.advising.supervisor_comment}}</dd>
+      </dl>
+    </td>
+  </tr>
+  <!-- Advising [end] -->
+  <!-- Objectives [begin] -->
+  <tr>
+    <td colspan="4"><h3>Objectives</h3></td>
+  </tr>
+  <tr data-ng-repeat="objective in selectedEval[0].objectives">
+    <td colspan="2">
+      <dl>
+        <dt style="font-weight: bold">Objective</dt>
+        <dd>{{objective.objective}}</dd>
+        <dt style="font-weight: bold">Mid-Year Progress</dt>
+        <dd>{{objective.progress}}</dd>
+      </dl>
+    </td>
+    <td colspan="2">
+    <dl>
+      <dt style="font-weight: bold">Goals</dt>
+      <dd>{{objective.goals}}</dd>
+      <dt style="font-weight: bold">End-of-Year Results</dt>
+      <dd>{{objective.results}}</dd>
+    </dl>
+  </tr>
+  <!-- Objectives [end] -->
+  <!-- Training [begin] -->
+  <tr>
+    <td colspan="4"><h3>Professional Development</h3></td>
+  </tr>
+  <tr>
+    <td colspan="2">
+      <dl>
+        <dt style="font-weight: bold">Required License/Certification/Credential Expires</dt>
+        <dd>{{selectedEval[0].professional_development.cert_lic_date | date: 'shortDate'}}</dd>
+      </dl>
+    </td>
+    <td colspan="2">
+      <dl>
+        <dt style="font-weight: bold">Supplemental License/Certification/Credential Expires</dt>
+        <dd>{{selectedEval[0].professional_development.additional_date | date: 'shortDate'}}</dd>
+      </dl>
+    </td>
+  </tr>
+  <tr data-ng-repeat="activity in selectedEval[0].prof_dev_activities">
+    <td colspan="2">
+      <dl>
+        <dt style="font-weight: bold">Professional Development Activity</dt>
+        <dd>{{activity.activity}}</dd>
+        <dt style="font-weight: bold">Hours</dt>
+        <dd>{{activity.hours}}</dd>
+      </dl>
+    </td>
+    <td colspan="2">
+    <dl>
+      <dt style="font-weight: bold">Comments</dt>
+      <dd>{{activity.comments}}</dd>
+    </dl>
+    </td>
+  </tr>
+  <!-- Training [end] -->
+  <!-- Acknowledgement [begin] -->
+  <tr>
+    <td colspan="4"><h3>Acknowledgement</h3></td>
+  </tr>
+  <tr>
+    <td colspan="2">
+      <dl>
+        <dt style="font-weight: bold">Employee Comments</dt>
+        <dd data-ng-if="evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack">
+          {{selectedEval[0].acknowledgements.emp_comment}}
+        </dd>
+      </dl>
+    </td>
+    <td colspan="2">
+    <dl>
+      <dt style="font-weight: bold">Supervisor Comments</dt>
+      <dd data-ng-if="evalType ==='supervisor' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack">
+        {{selectedEval[0].acknowledgements.emp_comment}}
+      </dd>
+    </dl>
+    </td>
+  </tr>
+  <!-- PIP [begin] -->
+  <tr data-ng-show="selectedEval[0].acknowledgements.pip_needed === true && selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack">
+    <td colspan="4">
+      <dl>
+        <dt style="font-weight: bold">Performance Improvement Plan</dt>
+        <dd data-ng-if="evalType ==='employee' || selectedEval[0].acknowledgements.emp_ack && selectedEval[0].acknowledgements.sup_ack">
+          {{selectedEval[0].performance_improvement_plan.pip_steps}}
+        </dd>
+      </dl>
+    </td>
+  </tr>
+  <!-- PIP [end] -->
+  <!-- Acknowledgement [end] -->
+  <tr>
+    <td style="width: 25%;"></td>
+    <td style="width: 25%;"></td>
+    <td style="width: 25%;"></td>
+    <td style="width: 25%;"></td>
+  </tr>
+</table>
