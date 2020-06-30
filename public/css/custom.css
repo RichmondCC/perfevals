@@ -4,3 +4,25 @@
   bottom: 33%;
   right: 5%;
 }
+
+.rcc_fieldset {
+  border: 1px solid lightgray;
+  border-radius: 5px;
+  padding: .5em;
+  margin-bottom: 1em;
+}
+
+.my-form-control {
+  height: auto;
+}
+
+@media print
+{
+  .no-print, .no-print * {
+    display: none !important;
+  }
+
+  td {
+    width: 25%;
+  }
+}

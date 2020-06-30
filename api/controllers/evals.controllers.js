@@ -1,3 +1,4 @@
+var formidable = require('formidable');
 var mongoose = require('mongoose');
 var Eval = mongoose.model('Eval');
 
@@ -53,7 +54,6 @@ module.exports.evalsGetRelevant = function(req, res) {
         json: {}
       };
       if (err) {
-        console.err(err);
         response.status = 500;
         response.json = err;
       } else {
@@ -230,6 +230,61 @@ module.exports.evalsUpdateSup = function(req, res) {
         eval.acknowledgements.sup_date = req.body.sup_date;
         eval.acknowledgements.sup_saved = req.body.sup_saved;
         eval.acknowledgements.sup_comment = req.body.sup_comment;
+          // Full-time Faculty
+      eval.observation.date = req.body.obs_date;
+      eval.observation.courseCode = req.body.obs_courseCode;
+      eval.observation.stuEvalRating = req.body.obs_stuEvalRating;
+      eval.observation.scheduled = req.body.obs_scheduled;
+      eval.observation.scheduledDate = req.body.obs_scheduledDate;
+      eval.observation.firstYear = req.body.obs_firstYear;
+      eval.observation.yearsInstructor = req.body.obs_yearsInstructor;
+      eval.observation.moodle.moodleOnline = req.body.obs_moodleOnline;
+      eval.observation.moodle.moodleICR = req.body.obs_moodleICR;
+      eval.observation.moodle.moodleSyllabus = req.body.obs_moodleSyllabus;
+      eval.observation.moodle.moodleRoster = req.body.obs_moodleRoster;
+      eval.observation.goals.rating = req.body.obs_goals_rating;
+      eval.observation.goals.comment = req.body.obs_goals_comment;
+      eval.observation.presentation.rating = req.body.obs_presentation_rating;
+      eval.observation.presentation.comment = req.body.obs_presentation_comment;
+      eval.observation.expertise.rating = req.body.obs_expertise_rating;
+      eval.observation.expertise.comment = req.body.obs_expertise_comment;
+      eval.observation.thinking.rating = req.body.obs_thinking_rating;
+      eval.observation.thinking.comment = req.body.obs_thinking_comment;
+      eval.observation.management.rating = req.body.obs_management_rating;
+      eval.observation.management.comment = req.body.obs_management_comment;
+      eval.observation.involvement.rating = req.body.obs_involvement_rating;
+      eval.observation.involvement.comment = req.body.obs_involvement_comment;
+      eval.observation.attitude = req.body.obs_attitude,
+      eval.observation.visitation = req.body.obs_visitation,
+      eval.observation.strengths = req.body.obs_strengths;
+      eval.observation.suggestions = req.body.obs_suggestions;
+      eval.observation.onlCommunication.rating = req.body.obs_onlCommunication_rating;
+      eval.observation.onlCommunication.comment = req.body.obs_onlCommunication_comment;
+      eval.observation.onlQnA.rating = req.body.obs_onlQnA_rating;
+      eval.observation.onlQnA.comment = req.body.obs_onlQnA_comment;
+      eval.observation.onlFeedback.rating = req.body.obs_onlFeedback_rating;
+      eval.observation.onlFeedback.comment = req.body.obs_onlFeedback_comment;
+      eval.observation.onlSchedule.rating = req.body.obs_onlSchedule_rating;
+      eval.observation.onlSchedule.comment = req.body.obs_onlSchedule_comment;
+      eval.observation.onlCalendar.rating = req.body.obs_onlCalendar_rating;
+      eval.observation.onlCalendar.comment = req.body.obs_onlCalendar_comment;
+      eval.observation.onlParticipation.rating = req.body.obs_onlParticipation_rating;
+      eval.observation.onlParticipation.comment = req.body.obs_onlParticipation_comment;
+      eval.observation.onlInstruction.rating = req.body.obs_onlInstruction_rating;
+      eval.observation.onlInstruction.comment = req.body.obs_onlInstruction_comment;
+      eval.observation.onlAssessment.rating = req.body.obs_onlAssessment_rating;
+      eval.observation.onlAssessment.comment = req.body.obs_onlAssessment_comment;
+      eval.observation.onlLinks.rating = req.body.obs_onlLinks_rating;
+      eval.observation.onlLinks.comment = req.body.obs_onlLinks_comment;
+      eval.observation.onlContent.rating = req.body.obs_onlContent_rating;
+      eval.observation.onlContent.comment = req.body.obs_onlContent_comment;
+      eval.observation.onlUseful.rating = req.body.obs_onlUseful_rating;
+      eval.observation.onlUseful.comment = req.body.obs_onlUseful_comment;
+      eval.observation.onlGrammar.rating = req.body.obs_onlGrammar_rating;
+      eval.observation.onlGrammar.comment = req.body.obs_onlGrammar_comment;
+      eval.observation.onlICR.rating = req.body.obs_onlICR_rating;
+      eval.observation.onlICR.comment = req.body.obs_onlICR_comment;
+
         eval.save(function(err, updatedEval) {
           if (err) {
             res
@@ -391,6 +446,26 @@ module.exports.evalsGetAdmin = function(req, res) {
     });
 };
 
+module.exports.evalsPrintAllAdmin = function(req, res) {
+  var years = req.params.years;
+
+  Eval
+    .find({years: years})
+    .exec(function(err, evals) {
+      var response = {};
+      if (err) {
+        response.status = 500;
+        response.json = err;
+      } else {
+        response.status = 200;
+        response.json = evals;
+      }
+      res
+        .status(response.status)
+        .json(response.json);
+    });
+};
+
 module.exports.evalsCountAdmin = function(req, res) {
   var years = req.params.years;
 
@@ -411,9 +486,40 @@ module.exports.evalsCountAdmin = function(req, res) {
     });
 };
 
+module.exports.evalsGetYears = function(req, res){
+  Eval
+    .find()
+    .distinct('years', function(err, years){
+      if(err){
+        res
+          .status(200)
+          .json({err: true, msg: 'Could not retrieve years from database.'});
+      } else {
+        res
+          .status(200)
+          .json({err: false, msg: 'Unique years retreived.', years: years});
+      }
+    });
+};
+
 module.exports.generateEvals = function(req, res) {
   var fromYear = req.body.fromYear;
   var toYear = req.body.toYear;
+  Eval
+    .find({years: fromYear}, function(err, evals){
+      if(err){
+        console.log(err);
+      } else {
+        for(var i = 0; i < evals.length; i++){
+          Eval
+            .create({
+              years: toYear,
+              
+            })
+        }
+      }
+
+  });
   Eval
     .find({
       years: fromYear
@@ -421,27 +527,36 @@ module.exports.generateEvals = function(req, res) {
     .exec(function(err, evals) {
       var response = {};
       if (err) {
+        console.log(err);
         response.status = 500;
         response.json = err;
       } else {
         response.status = 200;
-        response.json = evals;
+        response.json = {msg: 'message did not change'};//evals;
         resArray = [];
         for(var i = 0; i < evals.length; i++){
+          var lastJobDesc = evals[i].job_description.job_desc.length -1;
           Eval
             .create({
-              years: req.body.toYear,
+              years: toYear,
               name: evals[i].name,
+              coll_id: evals[i].coll_id,
               title: evals[i].title,
               division: evals[i].division,
               department: evals[i].department,
+              faculty: evals[i].faculty,
               username: evals[i].username,
               supervisor: evals[i].supervisor,
               supervisor_name: evals[i].supervisor_name,
               next_level: evals[i].next_level,
               next_level_name: evals[i].next_level_name,
               job_description: {
-                admin_desc_link: evals[i].job_description.admin_desc_link
+                job_desc: {
+                  file_name: evals[i].job_description.job_desc[lastJobDesc].file_name,
+                  // file_name: evals[i].job_description.admin_desc_link,
+                  effective_date: evals[i].job_description.job_desc[lastJobDesc].effective_date,
+                  // effective_date: '7/01/2020'
+                }
               },
               acknowledgements: {
                 emp_date: '',
@@ -449,22 +564,17 @@ module.exports.generateEvals = function(req, res) {
                 nl_date: '',
               }
             },
-          function(err, eval){
+          function(err, newEval){
             if(err){
-              res
-                response.status = 400;
-                response.json = err;
+              console.log(err);
             } else {
-              res
-                response.status = 201;
-                resArray.push(eval);
-                response.json = eval;
+                resArray.push(newEval);
             }
           });
         }
         res
           .status(response.status)
-          .json(response.json);
+          .json(resArray);
       }
     });
 };
@@ -532,162 +642,256 @@ module.exports.evalsReplaceAdmin = function(req, res) {
   };
 
 
-module.exports.evalsAddAdmin = function(req, res) {
-  Eval
-    .create({
-      years: req.body.years,
-      name: req.body.name,
-      title: req.body.title,
-      division: req.body.division,
-      department: req.body.department,
-      username: req.body.username,
-      supervisor: req.body.supervisor,
-      supervisor_name: req.body.supervisor_name,
-      next_level: req.body.next_level,
-      next_level_name: req.body.next_level_name,
-      job_description: {
-        admin_desc_link: req.body.job_description.admin_desc_link
-      },
-      acknowledgements: {
-        emp_date: '',
-        sup_date: '',
-        nl_date: '',
-      }
-    }, function(err, eval) {
-      if (err) {
-        res
-          .status(400)
-          .json(err);
-      } else {
-        res
-          .status(201)
-          .json(eval);
-      }
+// module.exports.evalsAddAdmin = function(req, res) {
+//   Eval
+//     .create({
+//       years: req.body.years,
+//       name: req.body.name,
+//       coll_id: req.body.coll_id,
+//       title: req.body.title,
+//       division: req.body.division,
+//       department: req.body.department,
+//       faculty: req.body.faculty,
+//       username: req.body.username,
+//       supervisor: req.body.supervisor,
+//       supervisor_name: req.body.supervisor_name,
+//       next_level: req.body.next_level,
+//       next_level_name: req.body.next_level_name,
+//       job_description: {
+//         admin_desc_link: req.body.job_description.admin_desc_link
+//       },
+//       acknowledgements: {
+//         emp_date: '',
+//         sup_date: '',
+//         nl_date: '',
+//       }
+//     }, function(err, eval) {
+//       if (err) {
+//         res
+//           .status(400)
+//           .json(err);
+//       } else {
+//         res
+//           .status(201)
+//           .json(eval);
+//       }
 
-    });
+//     });
 
-};
+// };
 
 module.exports.evalsUpdateAdmin = function(req, res) {
   var evalId = req.params.evalId;
-
+  var data = req.body;
+  // for(key in req.body){
+  //   console.log('key: ' + key + ' | value: ' + req.body[key]);
+  // }
   Eval
     .findById(evalId)
-    .select('-objectives -prof_dev_activities')
-    .exec(function(err, eval) {
-      var response = {
-        status: 200,
-        json: eval
-      };
-      if (err) {
-        response.status = 500;
-        response.json = err;
-      } else if (!eval) {
-        response.status = 404;
-        response.json = {
-          "message": "evalId not found"
-        };
-      }
-      if (response.status !== 200) {
+    .select('-objectives -prof_dev_activities -job_desc')
+    .exec(function(err, eval){
+      if(err){
         res
-          .status(response.status)
-          .json(response.json);
+          .status(200)
+          .json({err: true, msg: 'Server error.'});
+      } else if(!eval){
+        res
+          .status(200)
+          .json({err: true, msg: 'Could not find that evaluation.'})
       } else {
-        eval.name = req.body.name;
-        eval.title = req.body.title;
-        eval.division = req.body.division;
-        eval.department = req.body.department;
-        eval.username = req.body.username;
-        eval.supervisor = req.body.supervisor;
-        eval.supervisor_name = req.body.supervisor_name;
-        eval.next_level = req.body.next_level;
-        eval.next_level_name = req.body.next_level_name;
-        eval.job_description.admin_desc_link = req.body.admin_desc_link;
-        eval.save(function(err, updatedEval) {
-          if (err) {
+        for(key in data){
+          // console.log('key: ' + key + ' | value: ' + req.body[key]);
+          eval[key] = data[key];
+        }
+        eval.save(function(err, updateEval){
+          if(err){
             res
-              .status(500)
-              .json(err);
+              .status(200)
+              .json({err: true, msg: 'Could not save changes to the database.'});
           } else {
             res
-              .status(204)
-              .json(updatedEval);
+              .status(200)
+              .json({err: false, msg: 'Evaluation updated.', eval: updateEval});
           }
         });
+  
       }
+      // console.log('orig: ', eval);
+      // for(key in data){
+      //   // console.log('key: ' + key + ' | value: ' + req.body[key]);
+      //   eval[key] = data[key];
+      // }
+      // console.log('update: ', eval);
+
+
     });
+  // var form = new formidable.IncomingForm();
+  // form.parse(req, function(err, fields, files){
+  //   console.log(err);
+  //   console.log(fields);
+
+  // });
+
+  // Eval
+  //   .findById(evalId)
+  //   .select('-objectives -prof_dev_activities')
+  //   .exec(function(err, eval) {
+  //     var response = {
+  //       status: 200,
+  //       json: eval
+  //     };
+  //     if (err) {
+  //       response.status = 500;
+  //       response.json = err;
+  //     } else if (!eval) {
+  //       response.status = 404;
+  //       response.json = {
+  //         "message": "evalId not found"
+  //       };
+  //     }
+  //     if (response.status !== 200) {
+  //       res
+  //         .status(response.status)
+  //         .json(response.json);
+  //     } else {
+  //       eval.name = req.body.name;
+  //       eval.coll_id = req.body.coll_id;
+  //       eval.title = req.body.title;
+  //       eval.division = req.body.division;
+  //       eval.department = req.body.department;
+  //       //eval.faculty = req.body.faculty;
+  //       eval.username = req.body.username;
+  //       eval.supervisor = req.body.supervisor;
+  //       eval.supervisor_name = req.body.supervisor_name;
+  //       eval.next_level = req.body.next_level;
+  //       eval.next_level_name = req.body.next_level_name;
+  //       eval.job_description.admin_desc_link = req.body.admin_desc_link;
+  //       eval.save(function(err, updatedEval) {
+  //         if (err) {
+  //           res
+  //             .status(500)
+  //             .json(err);
+  //         } else {
+  //           res
+  //             .status(204)
+  //             .json(updatedEval);
+  //         }
+  //       });
+  //     }
+  //   });
 };
 
 module.exports.evalsUnlockAdmin = function(req, res) {
-  var evalId = req.params.evalId;
-  var type = req.params.type;
+    var evalId = req.params.evalId;
+    var type = req.params.type;
 
-  Eval
-    .findById(evalId)
-    .select('-objectives -prof_dev_activities')
-    .exec(function(err, eval) {
-      var response = {
-        status: 200,
-        json: eval
-      };
-      if (err) {
-        response.status = 500;
-        response.json = err;
-      } else if (!eval) {
-        response.status = 404;
-        response.json = {
-          "message": "evalId not found"
-        };
-      }
-      if (response.status !== 200) {
-        res
-          .status(response.status)
-          .json(response.json);
-      } else {
-        if(type === 'emp' || type === 'emp'){
-          eval.acknowledgements.emp_date = '';
-        }
-        if(type === 'sup' || type === 'emp'){
-          eval.acknowledgements.sup_date = '';
-          eval.acknowledgements.eval_super = '';
-        }
-        if(type === 'meet' || type === 'sup' || type === 'emp'){
-          eval.acknowledgements.verify_date = '';
-        }
-        if(type === 'nl' || type === 'meet' || type === 'sup' || type === 'emp'){
-          eval.acknowledgements.nl_date = '';
-          eval.acknowledgements.eval_nl = '';
+    Eval
+        .findById(evalId)
+        .select('-objectives -prof_dev_activities')
+        .exec(function(err, eval) {
+            var response = {
+                status: 200,
+                json: eval
+            };
+            if (err) {
+                response.status = 500;
+                response.json = err;
+            } else if (!eval) {
+                response.status = 404;
+                response.json = {
+                    "message": "evalId not found"
+                };
+            }
+            if (response.status !== 200) {
+                res
+                    .status(response.status)
+                    .json(response.json);
+            } else {
+                if(type === 'emp' || type === 'emp'){
+                    eval.acknowledgements.emp_date = '';
+                }
+                if(type === 'sup' || type === 'emp'){
+                    eval.acknowledgements.sup_date = '';
+                    eval.acknowledgements.eval_super = '';
+                }
+                if(type === 'meet' || type === 'sup' || type === 'emp'){
+                    eval.acknowledgements.verify_date = '';
+                }
+                if(type === 'nl' || type === 'meet' || type === 'sup' || type === 'emp'){
+                    eval.acknowledgements.nl_date = '';
+                    eval.acknowledgements.eval_nl = '';
 
-        }
-        eval.save(function(err, updatedEval) {
-          if (err) {
-            res
-              .status(500)
-              .json(err);
-          } else {
-            res
-              .status(204)
-              .json({});
-          }
+                }
+                eval.save(function(err, updatedEval) {
+                    if (err) {
+                        res
+                            .status(500)
+                            .json(err);
+                    } else {
+                        res
+                            .status(204)
+                            .json({});
+                    }
+                });
+            }
         });
-      }
-    });
 };
 
-module.exports.evalsDeleteAdmin = function(req, res) {
-  var evalId = req.params.evalId;
+module.exports.evalsFacToggleAdmin = function(req, res) {
+    var evalId = req.params.evalId;
 
-  Eval
-    .findByIdAndRemove(evalId)
-    .exec(function(err, eval) {
-      if (err) {
-        res
-          .status(404)
-          .json(err);
-      } else {
-        res
-          .status(204)
-          .json({});
-      }
-    });
+    Eval
+        .findById(evalId)
+        .select('-objectives -prof_dev_activities')
+        .exec(function(err, eval) {
+            var response = {
+                status: 200,
+                json: eval
+            };
+            if (err) {
+                response.status = 500;
+                response.json = err;
+            } else if (!eval) {
+                response.status = 404;
+                response.json = {
+                    "message": "evalId not found"
+                };
+            }
+            if (response.status !== 200) {
+                res
+                    .status(response.status)
+                    .json(response.json);
+            } else {
+                eval.faculty = !eval.faculty;
+                eval.save(function(err, updatedEval) {
+                    if (err) {
+                        res
+                            .status(500)
+                            .json(err);
+                    } else {
+                        res
+                            .status(200)
+                            .json(updatedEval);
+                    }
+                });
+            }
+        });
 };
+
+// module.exports.evalsDeleteAdmin = function(req, res) {
+//   var evalId = req.params.evalId;
+
+//   Eval
+//     .findByIdAndRemove(evalId)
+//     .exec(function(err, eval) {
+//       if (err) {
+//         res
+//           .status(404)
+//           .json(err);
+//       } else {
+//         res
+//           .status(204)
+//           .json({});
+//       }
+//     });
+// };

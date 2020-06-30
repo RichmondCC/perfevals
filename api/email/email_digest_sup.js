@@ -6,10 +6,24 @@ var Eval = mongoose.model('Eval');
 
 var nodemailer = require('nodemailer');
 var smtpConfig = {
-  host: '10.1.0.100',
+  host: '10.5.0.2',
+  // host: 'rccdc02.ad.richmondcc.edu',
   port: 25,
-  secure: false
+  secure: false,
+  tls: {
+    rejectUnauthorized: false
+  }
 };
+// var smtpConfig = {
+//   host: 'smtp.office365.com',
+//   port: 25,
+//   secure: false,
+//   auth: {
+//     user: 'evals@richmondcc.edu',
+//     pass: 'MkxcJN3RfYM9'
+//   },
+//   requireTLS: true
+// };
 var transporter = nodemailer.createTransport(smtpConfig);
 
   // Supervisor
@@ -68,10 +82,10 @@ Eval
             from: 'noreply@richmondcc.edu'
           };
           if(results[i]._id === 'wdmcinnis' || results[i]._id === 'nothing' ){
-            message.to = 'ragaddy@richmondcc.edu';
+            message.to = 'it@richmondcc.edu';
           } else {
-            message.to = 'ragaddy@richmondcc.edu';
-            // message.to = results[i]._id + '@richmondcc.edu';
+            // message.to = 'ragaddy@richmondcc.edu';
+            message.to = results[i]._id + '@richmondcc.edu';
           }
           message.subject = 'Performance Evaluation: Supervisor Alerts';
           message.text = 'Hello ' + results[i]._id + ',\n\n';

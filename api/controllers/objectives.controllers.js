@@ -1,11 +1,8 @@
 var mongoose = require('mongoose');
 var Eval = mongoose.model('Eval');
 
-// Get all objectives for a specific evaluation
 module.exports.objectivesGetAll = function(req, res){
   var evalId = req.params.evalId;
-  console.log('GET evalId', evalId);
-
   Eval
     .findById(evalId)
     .select('objectives')
@@ -28,8 +25,6 @@ module.exports.objectivesGetAll = function(req, res){
 module.exports.objectivesGetOne = function(req, res){
   var evalId = req.params.evalId;
   var objectiveId = req.params.objectiveId;
-  console.log('GET objectiveId ' + objectiveId + ' for evalId' + evalId);
-
   Eval
     .findById(evalId)
     .select('objectives')
@@ -54,7 +49,7 @@ var _addObjective = function(req, res, eval){
     objective: req.body.objective,
 		goals: req.body.goals,
   });
-  console.log(req.body);
+  // console.log(req.body);
   eval.save(function(err, evalUpdated){
     if(err){
       res
@@ -70,19 +65,15 @@ var _addObjective = function(req, res, eval){
 
 module.exports.objectivesAddOne = function(req, res){
   var evalId = req.params.evalId;
-  console.log('GET evalId', evalId);
-
   Eval
     .findById(evalId)
     .select('objectives')
     .exec(function(err, eval){
       var response = {};
       if(err){
-        console.log('Error finding eval');
         response.status = 500;
         response.message = err;
       } else if(!eval) {
-        console.log('Eval id not found in database', evalId);
         response.status = 404;
         response.message = {"message": 'Eval id not found ' + evalId};
       }
@@ -99,55 +90,36 @@ module.exports.objectivesAddOne = function(req, res){
 module.exports.objectivesUpdateOne = function(req, res){
   var evalId = req.params.evalId;
   var objectiveId = req.params.objectiveId;
-  console.log('GET objectiveId ' + objectiveId + ' for evalId' + evalId);
-
   Eval
     .findById(evalId)
     .select('objectives')
     .exec(function(err, eval){
-      var objective = eval.objectives.id(objectiveId);
-      var response = {
-        status: 200,
-        message: {}
-      };
       if(err){
-        response.status = 500;
-        response.message = err;
-      } else if(!eval) {
-        response.status = 404;
-        response.message = {
-          "message" : "evalId not found " + evalId
-        };
+        res
+          .status(200)
+          .json({err: true, msg: 'Error finding evaluation.'});
       } else {
-        thisObjective = eval.objectives.id(objectiveId);
-        if(!thisObjective){
-          response.status = 404;
-          response.message = {
-            "message" : "objectiveId not found " + objectiveId
-          };
-        }
-        if(response.status !== 200){
+        if(!eval){
           res
-            .status(response.status)
-            .json(response.message);
-        } else {
-          thisObjective.objective =  req.body.objective;
-      		thisObjective.goals =  req.body.goals;
-      		thisObjective.progress =  req.body.progress;
-      		thisObjective.results =  req.body.results;
-
-          eval.save(function(err, updatedEval){
-            if(err){
-              res
-                .status(500)
-                .json(err);
-            } else {
-              res
-                .status(204)
-                .json({});
+            .status(200)
+            .json({err: true, msg: 'could not find evaluation.'});
+          } else {
+            objectiveToUpdate = eval.objectives.id(objectiveId);
+            for([key, value] of Object.entries(req.body)){
+              objectiveToUpdate[key] = value;
             }
-          });
-        }
+            eval.save(function(err, updatedEval){
+              if(err){
+                res
+                .status(200)
+                .json({err: true, msg: 'could not update evaluation.'});    
+              } else {
+                res
+                .status(200)
+                .json({err: false, msg: 'Objective updated.', objectives: updatedEval.objectives});  
+              }
+            });
+          }
       }
     });
 };
@@ -155,51 +127,38 @@ module.exports.objectivesUpdateOne = function(req, res){
 module.exports.objectivesDeleteOne = function(req, res){
   var evalId = req.params.evalId;
   var objectiveId = req.params.objectiveId;
-  console.log('GET objectiveId ' + objectiveId + ' for evalId' + evalId);
-
   Eval
     .findById(evalId)
     .select('objectives')
     .exec(function(err, eval){
-      var objective = eval.objectives.id(objectiveId);
-      var response = {
-        status: 200,
-        message: {}
-      };
       if(err){
-        response.status = 500;
-        response.message = err;
+        res
+          .status(200)
+          .json({err: true, msg: 'Error finding evaluation.'});
       } else if(!eval) {
-        response.status = 404;
-        response.message = {
-          "message" : "evalId not found " + evalId
-        };
+        res
+          .status(200)
+          .json({err: true, msg: 'Could not find evaluation.'});
       } else {
-        thisObjective = eval.objectives.id(objectiveId);
-        if(!thisObjective){
-          response.status = 404;
-          response.message = {
-            "message" : "objectiveId not found " + objectiveId
-          };
-        }
-        if(response.status !== 200){
+        objectiveToDelete = eval.objectives.id(objectiveId);
+        if(!objectiveToDelete){
           res
-            .status(response.status)
-            .json(response.message);
-        } else {
-          thisObjective.remove();
-          eval.save(function(err, updatedEval){
-            if(err){
-              res
-                .status(500)
-                .json(err);
-            } else {
-              res
-                .status(204)
-                .json({});
-            }
-          });
-        }
-      }
+            .status(200)
+            .json({err: true, msg: 'Could not find objective.'});
+          } else {
+            objectiveToDelete.remove();
+            eval.save(function(err, updatedEval){
+              if(err){
+                res
+                  .status(200)
+                  .json({err: true, msg: 'Could not delete objective.'});
+                } else {
+                  res
+                    .status(200)
+                    .json({err: false, msg: 'Objective deleted sucessfully.', objectives: updatedEval.objectives});
+                }
+            });
+          }
+      }      
     });
 };

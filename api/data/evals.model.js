@@ -14,12 +14,23 @@ var profdevSchema = new mongoose.Schema({
 		comments: String
 });
 
+var jobDescSchema = new mongoose.Schema({
+	file_name: String,
+	effective_date: String,
+	conclude_date: String
+});
+
 var evalSchema = new mongoose.Schema({
-  years: String,
+	years: String,
 	name: String,
+    coll_id: String,
 	title: String,
 	division: String,
 	department: String,
+	faculty: {
+		type: Boolean,
+		default: false
+	},
 	username: String,
 	supervisor: String,
 	supervisor_name: String,
@@ -27,6 +38,7 @@ var evalSchema = new mongoose.Schema({
 	next_level_name: String,
 	job_description: {
 		admin_desc_link: String,
+		job_desc:  [jobDescSchema],
 		reviewed_date: String,
 		updated_date: String
 	},
@@ -91,6 +103,119 @@ var evalSchema = new mongoose.Schema({
 			supervisor_rating: String,
 			supervisor_comment: String
 		}
+	},
+	observation: {
+		date: String,
+		courseCode: String,
+		stuEvalRating: String,
+		scheduled: {
+			type: Boolean,
+			default: false
+		},
+		scheduledDate: String,
+		firstYear: {
+			type: Boolean,
+			default: false
+		},
+		yearsInstructor: String,
+  		moodle: {
+  			moodleOnline: {
+				type: Boolean,
+				default: false
+			},
+			moodleICR: {
+				type: Boolean,
+				default: false
+			},
+			moodleSyllabus: {
+				type: Boolean,
+				default: false
+			},
+			moodleRoster: {
+				type: Boolean,
+				default: false
+			},
+		},
+		goals: {
+			rating: String,
+			comment: String
+		},
+		presentation: {
+			rating: String,
+			comment: String
+		},
+		expertise: {
+			rating: String,
+			comment: String
+		},
+		thinking: {
+			rating: String,
+			comment: String
+		},
+		management: {
+			rating: String,
+			comment: String
+		},
+		involvement: {
+			rating: String,
+			comment: String
+		},
+		attitude: String,
+		visitation: String,
+		strengths: String,
+		suggestions: String,
+		onlCommunication: {
+			rating: String,
+			comment: String
+		},
+		onlQnA: {
+			rating: String,
+			comment: String
+		},
+		onlFeedback: {
+			rating: String,
+			comment: String
+		},
+		onlSchedule: {
+			rating: String,
+			comment: String
+		},
+		onlCalendar: {
+			rating: String,
+			comment: String
+		},
+		onlParticipation: {
+			rating: String,
+			comment: String
+		},
+		onlInstruction: {
+			rating: String,
+			comment: String
+		},
+		onlAssessment: {
+			rating: String,
+			comment: String
+		},
+		onlLinks: {
+			rating: String,
+			comment: String
+		},
+		onlContent: {
+			rating: String,
+			comment: String
+		},
+		onlUseful: {
+			rating: String,
+			comment: String
+		},
+		onlGrammar: {
+			rating: String,
+			comment: String
+		},
+		onlICR: {
+			rating: String,
+			comment: String
+		},
 	},
 	performance_improvement_plan: {
 		pip_steps: String,

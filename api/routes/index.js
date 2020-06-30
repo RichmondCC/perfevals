@@ -5,6 +5,8 @@ var passport = require('passport');
 var ctrlEvals = require('../controllers/evals.controllers.js');
 var ctrlProfDev = require('../controllers/profdev.controllers.js');
 var ctrlObjectives = require('../controllers/objectives.controllers.js');
+var ctrlJobDesc = require('../controllers/jobDesc.controllers.js');
+var ctrlAdmins = require('../controllers/admins.controllers.js');
 
 // Logins
 router.post('/login', passport.authenticate('ldapauth', {
@@ -43,6 +45,11 @@ router
   .route('/adminEvals')
   .get(ctrlEvals.evalsGetAdmin);
 
+// Admin Print All Evaluations
+router
+  .route('/adminEvals/:years')
+  .get(ctrlEvals.evalsPrintAllAdmin);
+
 // Save Form - Employee
 router
   .route('/empEvals/:evalId')
@@ -80,17 +87,22 @@ router
 
 // Unlock Eval - Admin
 router
-  .route('/adminUnlockEval/:evalId/:type')
-  .put(ctrlEvals.evalsUnlockAdmin);
+    .route('/adminUnlockEval/:evalId/:type')
+    .put(ctrlEvals.evalsUnlockAdmin);
+
+// Toggle Faculty - Admin
+router
+    .route('/adminToggleFac/:evalId')
+    .put(ctrlEvals.evalsFacToggleAdmin);
 
 router
   .route('/evals')
-  .post(ctrlEvals.evalsAddAdmin);
+  .post(ctrlJobDesc.evalsAddAdmin);
 
 router
   .route('/evals/:evalId')
   .get(ctrlEvals.evalsGetEval)
-  .delete(ctrlEvals.evalsDeleteAdmin);
+  .delete(ctrlJobDesc.evalsDeleteAdmin);
 
 // Training
 router
@@ -115,5 +127,26 @@ router
   .get(ctrlObjectives.objectivesGetOne)
   .put(ctrlObjectives.objectivesUpdateOne)
   .delete(ctrlObjectives.objectivesDeleteOne);
+
+// Job Descriptions
+router
+  .route('/evals/:evalId/jobDesc')
+  //.get(ctrlJobDesc.jobDescGetAll)
+  .post(ctrlJobDesc.jobDescAddOne);
+
+router
+  .route('/evals/:evalId/jobDesc/:jobDescId')
+  .put(ctrlJobDesc.jobDescUpdateOne)
+  .delete(ctrlJobDesc.jobDescDeleteOne);
+
+// Admins
+router
+  .route('/4@7@_admins')
+  .get(ctrlAdmins.getAdmins)
+  .put(ctrlAdmins.updateAdmins);
+
+router
+  .route('/uniqueYears')
+  .get(ctrlEvals.evalsGetYears);
 
 module.exports = router;
